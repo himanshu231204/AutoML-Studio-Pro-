@@ -1,0 +1,1 @@
+{"task": "regression", "features": [{"name": "RM", "type": "numeric", "mean": 6.2576675191815845}, {"name": "LSTAT", "type": "numeric", "mean": 12.836598465473147}, {"name": "PTRATIO", "type": "numeric", "mean": 18.441432225063938}]}
