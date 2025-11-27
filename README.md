@@ -1,10 +1,11 @@
 # 🧠 AutoML Studio Pro  
 ### A No-Code Machine Learning & Learning-Oriented Platform
 
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://automl-portfolio-project.streamlit.app)  
-![Python](https://img.shields.io/badge/Python-3.9%2B-blue)  
-![Scikit-Learn](https://img.shields.io/badge/Library-Scikit--Learn-orange)  
+[![Live App](https://img.shields.io/badge/Live_App-Visit_Now-brightgreen)](https://automl-studio-pro.onrender.com/)
+![Python](https://img.shields.io/badge/Python-3.9%2B-blue)
+![Scikit-Learn](https://img.shields.io/badge/Library-Scikit--Learn-orange)
 ![License](https://img.shields.io/badge/License-MIT-green)
+
 
 ## 📖 Overview
 **AutoML Studio Pro** is an end-to-end automated machine learning (AutoML) platform built to simplify the entire data science workflow.  
