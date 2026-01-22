@@ -1,7 +1,7 @@
-# 🧠 [AutoML Studio Pro](https://automl-studio-pro.onrender.com/)  
+# 🧠 [AutoML Studio Pro](https://automl-studio-pro-on5vfj7azahvyvdj9fyh7b.streamlit.app/)  
 ### A No-Code Machine Learning & Learning-Oriented Platform
 
-[![Live App](https://img.shields.io/badge/Live_App-Visit_Now-brightgreen)](https://automl-studio-pro.onrender.com/)
+[![Live App](https://img.shields.io/badge/Live_App-Visit_Now-brightgreen)](https://automl-studio-pro-on5vfj7azahvyvdj9fyh7b.streamlit.app/)
 ![Python](https://img.shields.io/badge/Python-3.9%2B-blue)
 ![Scikit-Learn](https://img.shields.io/badge/Library-Scikit--Learn-orange)
 ![License](https://img.shields.io/badge/License-MIT-green)
