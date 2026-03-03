@@ -30,6 +30,7 @@
 - [Usage](#usage)
 - [Suggested Repository Topics](#suggested-repository-topics)
 - [Contributing](#contributing)
+- [Support This Project](#support-this-project)
 - [License](#license)
 - [Contact](#contact)
 
@@ -152,6 +153,22 @@ Contributions are welcome! To get started:
 5. Open a Pull Request.
 
 Please open an [issue](https://github.com/himanshu231204/AutoML-Studio-Pro-/issues) for bug reports or feature requests.
+
+---
+
+## 💖 Support This Project
+
+If this project helped you, consider supporting my work!
+
+[![Sponsor](https://img.shields.io/badge/Sponsor-💖-ff69b4?style=for-the-badge)](https://github.com/sponsors/himanshu231204)
+
+Every contribution helps me:
+- ⏰ Spend more time on open-source
+- 🆓 Keep all tools free for everyone
+- 📚 Create more tutorials and guides
+- 🚀 Build new developer tools
+
+**[⭐ Star this repo](../../stargazers)** if you find it useful — it means a lot!
 
 ---
 
