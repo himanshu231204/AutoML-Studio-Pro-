@@ -111,6 +111,56 @@ streamlit run app.py
 
 The application will open automatically in your default browser at `http://localhost:8501`.
 
+### Run with Docker
+
+If you prefer running the app in a container, use one of the following options.
+
+Prerequisites:
+- Docker Desktop installed and running
+
+Option 1: Docker Compose (recommended)
+
+```bash
+# Build and run in detached mode
+docker compose up -d --build
+
+# Open the app
+# http://localhost:8501
+
+# Stop containers
+docker compose down
+```
+
+Option 2: Docker CLI
+
+```bash
+# Build image
+docker build -t automl-studio-pro .
+
+# Run container
+docker run -d -p 8501:8501 --name automl_studio_pro automl-studio-pro
+
+# Stop and remove container
+docker stop automl_studio_pro
+docker rm automl_studio_pro
+```
+
+Notes:
+- The app is exposed on port `8501`.
+- `requirements.txt` is UTF-8 encoded for Linux container compatibility.
+
+Troubleshooting:
+- Docker command not found:
+	Install Docker Desktop and restart terminal, then run `docker --version`.
+- Docker daemon is not running:
+	Start Docker Desktop, wait until status is "Engine running", then retry.
+- Port 8501 already in use:
+	Run with a different host port, for example `docker run -d -p 8502:8501 --name automl_studio_pro automl-studio-pro`.
+- Container exits immediately:
+	Check logs with `docker logs automl_studio_pro`.
+- Dependency changes are not reflected:
+	Rebuild image with `docker compose up -d --build` or `docker build --no-cache -t automl-studio-pro .`.
+
 ---
 
 ## Project Structure
@@ -126,8 +176,9 @@ The application will open automatically in your default browser at `http://local
 │       └── screenshots/        # UI screenshots for README/docs
 ├── automl_app/
 │   ├── core/                   # Shared config and helper utilities
-│   ├── tabs/                   # Streamlit tab modules
-│   └── ui/                     # Reusable UI components
+│   └── ui/                     # Reusable UI components and tab modules
+│       ├── tabs/               # Streamlit tab modules (train, analysis, prediction, guide, developer)
+│       └── footer.py           # Shared footer component
 ├── docs/
 │   ├── api/                    # API/exported interface docs
 │   └── guides/                 # User and developer guides
@@ -140,7 +191,7 @@ The application will open automatically in your default browser at `http://local
 ### App Flow
 - `app.py` initializes the page and routes each Streamlit tab to its dedicated module.
 - `automl_app/core` holds reusable configuration and ML utility functions.
-- `automl_app/tabs` keeps each product area isolated for easier maintenance.
+- `automl_app/ui/tabs` keeps each product area isolated for easier maintenance.
 - `automl_app/ui` contains shared UI components used across the app.
 
 ---
