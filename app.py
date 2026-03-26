@@ -13,17 +13,7 @@ warnings.filterwarnings("ignore")
 
 
 def main() -> None:
-    if "theme_mode" not in st.session_state:
-        st.session_state["theme_mode"] = "Light"
-
-    setup_page(theme_mode=st.session_state["theme_mode"].lower())
-
-    with st.sidebar:
-        st.markdown("### Appearance")
-        selected_theme = st.radio("Theme", ["Light", "Dark"], index=0 if st.session_state["theme_mode"] == "Light" else 1)
-        if selected_theme != st.session_state["theme_mode"]:
-            st.session_state["theme_mode"] = selected_theme
-            st.rerun()
+    setup_page(theme_mode="dark")
 
     st.markdown(
         """
