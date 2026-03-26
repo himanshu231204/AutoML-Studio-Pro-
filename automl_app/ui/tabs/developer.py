@@ -319,7 +319,7 @@ def render_developer_tab() -> None:
             st.markdown(
                 """
                 <div class="stat-box">
-                    <div class="stat-number">5+</div>
+                    <div class="stat-number">1+</div>
                     <div class="stat-label">Years Experience</div>
                 </div>
                 """,
