@@ -217,6 +217,10 @@ def render_train_tab() -> None:
         if pipeline is None or best_name is None or score is None:
             raise ValueError("Koi bhi model successfully train nahi hua. Data ko clean karke dobara try karein.")
 
+        best_row = next((row for row in leaderboard if row.get("model") == best_name), None)
+        displayed_score = float(best_row["score"]) if best_row and best_row.get("score") is not None else float(score)
+        cv_score = best_row.get("cv_score") if best_row else None
+
         metric = "Accuracy" if task == "classification" else "R2 Score"
 
         status.write("💾 Saving Artifacts...")
@@ -227,14 +231,18 @@ def render_train_tab() -> None:
         status.update(label="Training Complete!", state="complete", expanded=False)
 
         st.markdown(
-            f"""<div class="success-card"><h3>✅ Success!</h3><p><b>{metric}:</b> {score:.4f}</p></div>""",
+            f"""<div class="success-card"><h3>✅ Success!</h3><p><b>{metric}:</b> {displayed_score:.4f}</p></div>""",
             unsafe_allow_html=True,
         )
         st.caption(f"Best Model Selected: {best_name}")
+        if cv_score is not None and pd.notna(cv_score):
+            st.caption(f"Cross-Validation Score (mean): {float(cv_score):.4f}")
 
         leaderboard_df = pd.DataFrame(leaderboard)
         if not leaderboard_df.empty:
-            leaderboard_df["score"] = leaderboard_df["score"].round(4)
+            for col in ["score", "cv_score", "ranking_score"]:
+                if col in leaderboard_df.columns:
+                    leaderboard_df[col] = leaderboard_df[col].round(4)
             st.markdown("##### 🏁 Model Leaderboard")
             st.dataframe(leaderboard_df, use_container_width=True)
 

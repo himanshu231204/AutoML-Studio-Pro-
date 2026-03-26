@@ -1,9 +1,11 @@
 import json
 import os
 
+import numpy as np
 import pandas as pd
 from imblearn.over_sampling import SMOTE
 from imblearn.pipeline import Pipeline as ImbPipeline
+from sklearn.base import clone
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import (
     AdaBoostClassifier,
@@ -19,6 +21,7 @@ from sklearn.ensemble import (
 )
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import ElasticNet, Lasso, LinearRegression, LogisticRegression, Ridge
+from sklearn.model_selection import KFold, StratifiedKFold, cross_val_score
 from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder, StandardScaler
@@ -44,9 +47,20 @@ def is_classification(y: pd.Series) -> bool:
 def build_preprocessor(df: pd.DataFrame, target_col: str) -> tuple[ColumnTransformer, list[str], list[str]]:
     num_cols, cat_cols = quick_dtype_buckets(df, target_col)
     steps_num = [("imputer", SimpleImputer(strategy="median")), ("scaler", StandardScaler())]
+
+    # Reduce overfitting from very rare categories when supported.
+    try:
+        encoder = OneHotEncoder(
+            handle_unknown="infrequent_if_exist",
+            min_frequency=0.01,
+            sparse_output=False,
+        )
+    except TypeError:
+        encoder = OneHotEncoder(handle_unknown="ignore", sparse_output=False)
+
     steps_cat = [
         ("imputer", SimpleImputer(strategy="most_frequent")),
-        ("encoder", OneHotEncoder(handle_unknown="ignore", sparse_output=False)),
+        ("encoder", encoder),
     ]
 
     preprocessor = ColumnTransformer(
@@ -142,28 +156,68 @@ print(f\"Model Score: {{pipeline.score(X_test, y_test)}}\")
 def get_candidate_models(task: str):
     if task == "classification":
         return {
-            "HistGradientBoosting": HistGradientBoostingClassifier(learning_rate=0.1, max_depth=5, random_state=42),
+            "HistGradientBoosting": HistGradientBoostingClassifier(
+                learning_rate=0.05,
+                max_depth=None,
+                max_leaf_nodes=31,
+                min_samples_leaf=20,
+                l2_regularization=0.05,
+                random_state=42,
+            ),
             "GradientBoosting": GradientBoostingClassifier(random_state=42),
-            "RandomForest": RandomForestClassifier(n_estimators=250, random_state=42, n_jobs=-1),
-            "ExtraTrees": ExtraTreesClassifier(n_estimators=300, random_state=42, n_jobs=-1),
+            "RandomForest": RandomForestClassifier(
+                n_estimators=500,
+                max_features="sqrt",
+                min_samples_leaf=2,
+                class_weight="balanced_subsample",
+                random_state=42,
+                n_jobs=-1,
+            ),
+            "ExtraTrees": ExtraTreesClassifier(
+                n_estimators=600,
+                max_features="sqrt",
+                min_samples_leaf=1,
+                class_weight="balanced_subsample",
+                random_state=42,
+                n_jobs=-1,
+            ),
             "AdaBoost": AdaBoostClassifier(random_state=42),
-            "DecisionTree": DecisionTreeClassifier(random_state=42),
-            "LogisticRegression": LogisticRegression(max_iter=1200),
-            "KNN": KNeighborsClassifier(n_neighbors=7),
+            "DecisionTree": DecisionTreeClassifier(class_weight="balanced", random_state=42),
+            "LogisticRegression": LogisticRegression(max_iter=2000, class_weight="balanced"),
+            "KNN": KNeighborsClassifier(n_neighbors=5, weights="distance"),
         }
 
     return {
-        "HistGradientBoosting": HistGradientBoostingRegressor(learning_rate=0.1, max_depth=5, random_state=42),
+        "HistGradientBoosting": HistGradientBoostingRegressor(
+            learning_rate=0.05,
+            max_depth=None,
+            max_leaf_nodes=31,
+            min_samples_leaf=20,
+            l2_regularization=0.05,
+            random_state=42,
+        ),
         "GradientBoosting": GradientBoostingRegressor(random_state=42),
-        "RandomForest": RandomForestRegressor(n_estimators=250, random_state=42, n_jobs=-1),
-        "ExtraTrees": ExtraTreesRegressor(n_estimators=300, random_state=42, n_jobs=-1),
+        "RandomForest": RandomForestRegressor(
+            n_estimators=500,
+            max_features="sqrt",
+            min_samples_leaf=2,
+            random_state=42,
+            n_jobs=-1,
+        ),
+        "ExtraTrees": ExtraTreesRegressor(
+            n_estimators=600,
+            max_features="sqrt",
+            min_samples_leaf=1,
+            random_state=42,
+            n_jobs=-1,
+        ),
         "AdaBoost": AdaBoostRegressor(random_state=42),
         "DecisionTree": DecisionTreeRegressor(random_state=42),
         "LinearRegression": LinearRegression(),
         "Ridge": Ridge(alpha=1.0),
-        "Lasso": Lasso(alpha=0.001),
-        "ElasticNet": ElasticNet(alpha=0.01, l1_ratio=0.3, random_state=42),
-        "KNN": KNeighborsRegressor(n_neighbors=7),
+        "Lasso": Lasso(alpha=0.0005),
+        "ElasticNet": ElasticNet(alpha=0.005, l1_ratio=0.2, random_state=42),
+        "KNN": KNeighborsRegressor(n_neighbors=5, weights="distance"),
     }
 
 
@@ -201,6 +255,21 @@ def select_best_model(
     best_pipeline = None
     best_score = None
 
+    min_samples = int(len(X_train))
+    use_cv = min_samples >= 30
+    cv_splitter = None
+
+    if use_cv:
+        if task == "classification":
+            class_counts = pd.Series(y_train).value_counts(dropna=False)
+            min_class = int(class_counts.min()) if not class_counts.empty else 0
+            if min_class >= 2:
+                cv_n_splits = max(2, min(5, min_class))
+                cv_splitter = StratifiedKFold(n_splits=cv_n_splits, shuffle=True, random_state=42)
+        else:
+            cv_n_splits = max(2, min(5, min_samples // 5))
+            cv_splitter = KFold(n_splits=cv_n_splits, shuffle=True, random_state=42)
+
     for model_name, model in models.items():
         pipeline = build_model_pipeline(
             task,
@@ -222,11 +291,35 @@ def select_best_model(
             except Exception:
                 continue
 
-        leaderboard.append({"model": model_name, "score": score})
-        if best_score is None or score > best_score:
+        cv_score = np.nan
+        if cv_splitter is not None:
+            try:
+                cv_pipeline = build_model_pipeline(
+                    task,
+                    preprocessor,
+                    clone(model),
+                    use_smote=use_smote,
+                    smote_k_neighbors=smote_k_neighbors,
+                )
+                cv_values = cross_val_score(cv_pipeline, X_train, y_train, cv=cv_splitter, n_jobs=-1)
+                cv_score = float(np.mean(cv_values))
+            except Exception:
+                cv_score = np.nan
+
+        ranking_score = score
+        if not np.isnan(cv_score):
+            ranking_score = float((0.7 * cv_score) + (0.3 * score))
+
+        leaderboard.append({
+            "model": model_name,
+            "score": score,
+            "cv_score": cv_score,
+            "ranking_score": ranking_score,
+        })
+        if best_score is None or ranking_score > best_score:
             best_name = model_name
-            best_score = score
+            best_score = ranking_score
             best_pipeline = pipeline
 
-    leaderboard.sort(key=lambda item: item["score"], reverse=True)
+    leaderboard.sort(key=lambda item: item["ranking_score"], reverse=True)
     return best_name, best_pipeline, best_score, leaderboard
