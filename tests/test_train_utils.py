@@ -1,6 +1,6 @@
 import pandas as pd
 
-from automl_app.tabs.train import _clip_numeric_outliers, _dedupe_columns, _drop_high_corr_features, _profile_dataset
+from automl_app.ui.tabs.train import _clip_numeric_outliers, _dedupe_columns, _drop_high_corr_features, _profile_dataset
 
 
 def test_dedupe_columns_handles_duplicates_and_empty_names() -> None:

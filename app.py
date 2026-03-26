@@ -3,11 +3,11 @@ import warnings
 import streamlit as st
 
 from automl_app.core.config import setup_page
-from automl_app.tabs.analysis import render_analysis_tab
-from automl_app.tabs.developer import render_developer_tab
-from automl_app.tabs.manual import render_manual_tab
-from automl_app.tabs.prediction import render_prediction_tab
-from automl_app.tabs.train import render_train_tab
+from automl_app.ui.tabs.analysis import render_analysis_tab
+from automl_app.ui.tabs.developer import render_developer_tab
+from automl_app.ui.tabs.manual import render_manual_tab
+from automl_app.ui.tabs.prediction import render_prediction_tab
+from automl_app.ui.tabs.train import render_train_tab
 from automl_app.ui.footer import render_footer
 
 warnings.filterwarnings("ignore")
