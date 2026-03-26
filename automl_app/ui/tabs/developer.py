@@ -399,6 +399,11 @@ def render_developer_tab() -> None:
             """,
             unsafe_allow_html=True,
         )
+        st.link_button(
+            "🔗 View RAGNova Repo",
+            "https://github.com/himanshu231204/ragnova-rag-chatbot",
+            use_container_width=True,
+        )
     
     with col2:
         st.markdown(
@@ -414,6 +419,11 @@ def render_developer_tab() -> None:
             """,
             unsafe_allow_html=True,
         )
+        st.link_button(
+            "🔗 View AI Commit Repo",
+            "https://github.com/himanshu231204/ai-commit",
+            use_container_width=True,
+        )
 
     with col3:
         st.markdown(
@@ -428,6 +438,11 @@ def render_developer_tab() -> None:
             </div>
             """,
             unsafe_allow_html=True,
+        )
+        st.link_button(
+            "🔗 View AutoML Studio Repo",
+            "https://github.com/himanshu231204/AutoML-Studio-Pro-",
+            use_container_width=True,
         )
 
     st.markdown("<hr class='divider'>", unsafe_allow_html=True)
