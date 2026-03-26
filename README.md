@@ -28,6 +28,8 @@
 - [Getting Started](#getting-started)
 - [Project Structure](#project-structure)
 - [Usage](#usage)
+- [Architecture](#architecture)
+- [Project Governance](#project-governance)
 - [Suggested Repository Topics](#suggested-repository-topics)
 - [Contributing](#contributing)
 - [Support This Project](#support-this-project)
@@ -114,10 +116,25 @@ The application will open automatically in your default browser at `http://local
 ## Project Structure
 
 ```
-├── artifacts/          # Auto-generated models & schema files
-├── app.py              # Main Streamlit application
-├── requirements.txt    # Required Python packages
-└── README.md           # Project documentation
+├── .github/                    # CI/CD and community files
+│   ├── ISSUE_TEMPLATE/         # Bug report and feature request templates
+│   └── workflows/              # GitHub Actions pipelines
+├── artifacts/                  # Auto-generated models & schema files
+├── assets/
+│   └── images/
+│       ├── badges/             # Local badge assets (optional)
+│       └── screenshots/        # UI screenshots for README/docs
+├── automl_app/
+│   ├── core/                   # Shared config and helper utilities
+│   ├── tabs/                   # Streamlit tab modules
+│   └── ui/                     # Reusable UI components
+├── docs/
+│   ├── api/                    # API/exported interface docs
+│   └── guides/                 # User and developer guides
+├── tests/                      # Unit tests
+├── app.py                      # Main Streamlit application
+├── requirements.txt            # Required Python packages
+└── README.md                   # Project documentation
 ```
 
 ### App Flow
@@ -138,6 +155,19 @@ The application will open automatically in your default browser at `http://local
 
 ---
 
+## Architecture
+
+For technical design details, see [ARCHITECTURE.md](ARCHITECTURE.md).
+
+---
+
+## Project Governance
+
+- Contribution workflow: [CONTRIBUTING.md](CONTRIBUTING.md)
+- Community standards: [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
+
+---
+
 ## Suggested Repository Topics
 
 `automl` · `machine-learning` · `no-code` · `streamlit` · `scikit-learn` · `data-science` · `python` · `automated-machine-learning` · `eda` · `classification` · `regression` · `model-training` · `feature-importance` · `smote` · `gradient-boosting`
@@ -146,7 +176,9 @@ The application will open automatically in your default browser at `http://local
 
 ## Contributing
 
-Contributions are welcome! To get started:
+Contributions are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a PR.
+
+Quick start:
 
 1. Fork the repository.
 2. Create a feature branch (`git checkout -b feature/your-feature`).
@@ -154,7 +186,13 @@ Contributions are welcome! To get started:
 4. Push to the branch (`git push origin feature/your-feature`).
 5. Open a Pull Request.
 
-Please open an [issue](https://github.com/himanshu231204/AutoML-Studio-Pro-/issues) for bug reports or feature requests.
+When you open a PR, GitHub will auto-load the pull request template to keep reviews consistent.
+
+Please use the GitHub issue templates for bug reports and feature requests:
+- **Bug report** template for reproducible defects.
+- **Feature request** template for enhancements and roadmap ideas.
+
+You can open a new issue here: [Issues](https://github.com/himanshu231204/AutoML-Studio-Pro-/issues).
 
 ---
 

@@ -6,18 +6,23 @@ from imblearn.over_sampling import SMOTE
 from imblearn.pipeline import Pipeline as ImbPipeline
 from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import (
+    AdaBoostClassifier,
+    AdaBoostRegressor,
     ExtraTreesClassifier,
     ExtraTreesRegressor,
+    GradientBoostingClassifier,
+    GradientBoostingRegressor,
     HistGradientBoostingClassifier,
     HistGradientBoostingRegressor,
     RandomForestClassifier,
     RandomForestRegressor,
 )
 from sklearn.impute import SimpleImputer
-from sklearn.linear_model import ElasticNet, LogisticRegression, Ridge
+from sklearn.linear_model import ElasticNet, Lasso, LinearRegression, LogisticRegression, Ridge
 from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder, StandardScaler
+from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 
 from automl_app.core.config import ARTIFACTS_DIR
 
@@ -138,17 +143,25 @@ def get_candidate_models(task: str):
     if task == "classification":
         return {
             "HistGradientBoosting": HistGradientBoostingClassifier(learning_rate=0.1, max_depth=5, random_state=42),
+            "GradientBoosting": GradientBoostingClassifier(random_state=42),
             "RandomForest": RandomForestClassifier(n_estimators=250, random_state=42, n_jobs=-1),
             "ExtraTrees": ExtraTreesClassifier(n_estimators=300, random_state=42, n_jobs=-1),
+            "AdaBoost": AdaBoostClassifier(random_state=42),
+            "DecisionTree": DecisionTreeClassifier(random_state=42),
             "LogisticRegression": LogisticRegression(max_iter=1200),
             "KNN": KNeighborsClassifier(n_neighbors=7),
         }
 
     return {
         "HistGradientBoosting": HistGradientBoostingRegressor(learning_rate=0.1, max_depth=5, random_state=42),
+        "GradientBoosting": GradientBoostingRegressor(random_state=42),
         "RandomForest": RandomForestRegressor(n_estimators=250, random_state=42, n_jobs=-1),
         "ExtraTrees": ExtraTreesRegressor(n_estimators=300, random_state=42, n_jobs=-1),
+        "AdaBoost": AdaBoostRegressor(random_state=42),
+        "DecisionTree": DecisionTreeRegressor(random_state=42),
+        "LinearRegression": LinearRegression(),
         "Ridge": Ridge(alpha=1.0),
+        "Lasso": Lasso(alpha=0.001),
         "ElasticNet": ElasticNet(alpha=0.01, l1_ratio=0.3, random_state=42),
         "KNN": KNeighborsRegressor(n_neighbors=7),
     }
