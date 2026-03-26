@@ -18,21 +18,21 @@ def main() -> None:
     st.markdown(
         """
         <section class="app-hero">
-            <h1>AutoML Studio Pro</h1>
-            <p>Train robust ML models, inspect data health, compare algorithms, and deploy predictions from one production-ready workspace.</p>
+            <h1>🚀 AutoML Studio Pro</h1>
+            <p>Enterprise-grade machine learning platform. Train robust models, inspect data health, compare algorithms, and deploy predictions — all from one production-ready workspace.</p>
         </section>
         <section class="quick-strip">
             <div class="quick-card">
-                <b>Adaptive Training</b>
-                <span>Auto task detection with multi-model benchmarking and best-model selection.</span>
+                <b>⚡ Adaptive Training</b>
+                <span>Intelligent task detection with multi-model benchmarking, automatic preprocessing, and best-model selection optimized for your metric.</span>
             </div>
             <div class="quick-card">
-                <b>Data Health First</b>
-                <span>Built-in profiling, schema generation, and resilient preprocessing for noisy datasets.</span>
+                <b>📊 Data Health First</b>
+                <span>Built-in profiling, advanced EDA analytics, schema generation, and resilient preprocessing designed for real-world, noisy datasets.</span>
             </div>
             <div class="quick-card">
-                <b>Production Ready</b>
-                <span>Single and batch predictions with exportable artifacts and reusable Python code.</span>
+                <b>🔮 Production Ready</b>
+                <span>Single and batch predictions with exportable artifacts, reusable Python code, and integrated model versioning.</span>
             </div>
         </section>
         """,
@@ -42,8 +42,8 @@ def main() -> None:
     tab1, tab2, tab3, tab4 = st.tabs([
         "🚀 Train & Learn",
         "📊 Data Analysis",
-        "🔮 Production Engine",
-        "📘 User Manual",
+        "🔮 Predictions",
+        "📘 Guide",
     ])
 
     with tab1:

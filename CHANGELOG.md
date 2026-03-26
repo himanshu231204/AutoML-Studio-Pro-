@@ -32,6 +32,13 @@ All notable changes to this project are documented in this file.
   - accuracy
   - f1
   - roc_auc
+- Advanced EDA Analytics with six comprehensive tabs:
+  - **📈 Statistics**: Skewness, kurtosis, and detailed statistical summaries
+  - **🎯 Target Analysis**: Class balance detection, imbalance warnings, and distribution visualization
+  - **🔗 Correlations**: Top feature correlations, correlation matrix heatmap with flexible methods (Pearson/Spearman)
+  - **📊 Distributions**: Histogram, KDE, and Q-Q plots for numeric features; category distribution for categorical features
+  - **🗂️ Data Quality**: Completeness, uniqueness, consistency, and overall quality scores with actionable insights
+  - **🔍 Variance Analysis**: Feature variance contribution pie charts and variance-based feature importance
 
 ### Changed
 - Preprocessing improved for categorical handling by grouping infrequent categories when supported.
