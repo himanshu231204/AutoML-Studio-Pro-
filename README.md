@@ -86,11 +86,28 @@ Developed using **Streamlit** and **Scikit-Learn**, the platform streamlines eve
 
 ## 📂 Project Structure
 ```
-├── artifacts/          # Auto-generated models & schema files
-├── app.py              # Main Streamlit application
-├── requirements.txt    # Required Python packages
-└── README.md           # Project documentation
+├── artifacts/                     # Auto-generated models & schema files
+├── automl_app/
+│   ├── core/
+│   │   ├── config.py              # Streamlit page setup + app CSS
+│   │   └── helpers.py             # Preprocessing, schema, pipeline helpers
+│   ├── tabs/
+│   │   ├── train.py               # Train & Learn tab
+│   │   ├── analysis.py            # Data Analysis tab
+│   │   ├── prediction.py          # Production Engine tab
+│   │   └── manual.py              # User Manual tab
+│   └── ui/
+│       └── footer.py              # Shared footer renderer
+├── app.py                         # Lightweight Streamlit entrypoint
+├── requirements.txt               # Required Python packages
+└── README.md                      # Project documentation
 ```
+
+### App Flow
+- `app.py` initializes the page and routes each Streamlit tab to its dedicated module.
+- `automl_app/core` holds reusable configuration and ML utility functions.
+- `automl_app/tabs` keeps each product area isolated for easier maintenance.
+- `automl_app/ui` contains shared UI components used across the app.
 
 ---
 
