@@ -366,7 +366,7 @@ def render_developer_tab() -> None:
             """
         )
 
-    st.markdown()
+    st.markdown("<br>", unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns(3)
     
