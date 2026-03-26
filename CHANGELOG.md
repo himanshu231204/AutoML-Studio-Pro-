@@ -41,6 +41,7 @@ All notable changes to this project are documented in this file.
 - Added metric-aware scoring so selection follows chosen optimization metric.
 - Added optional top-model lightweight tuning with time budget support.
 - Training summary now shows selected training mode, optimization metric, and budget context.
+- Unit test workflow Python matrix updated to 3.11/3.12/3.13 to match dependency constraints (`contourpy==1.3.3` requires Python >= 3.11).
 
 ### Tests
 - Updated helper tests for ranking-score-based leaderboard order.
