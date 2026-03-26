@@ -251,10 +251,10 @@ def render_developer_tab() -> None:
         <div class="dev-hero">
             <div class="dev-avatar">👨‍💻</div>
             <div class="dev-name">Himanshu Kumar</div>
-            <div class="dev-title">Full-Stack ML Engineer & Data Scientist</div>
+            <div class="dev-title">Computer Science Engineering Student | AI Systems Builder</div>
             <div class="dev-subtitle">
-                Passionate about building intelligent systems that solve real-world problems. 
-                Specialized in AutoML, production ML pipelines, and data-driven decision making.
+                Focused on building real-world AI systems in Machine Learning and Generative AI.
+                I learn by building, ship practical tools, and share everything through open source.
             </div>
             <div class="social-links">
                 <a href="https://www.linkedin.com/in/himanshu231204/" target="_blank" class="social-button">
@@ -279,17 +279,18 @@ def render_developer_tab() -> None:
     with col1:
         st.markdown(
             """
-            I'm a passionate full-stack ML engineer with expertise in building end-to-end 
-            machine learning solutions. My journey in tech started with a curiosity about 
-            how data can drive intelligent decisions, and it evolved into a professional 
-            mission to democratize machine learning.
+            I am a Computer Science Engineering student focused on building real-world AI systems
+            in Machine Learning and Generative AI.
+
+            I believe in learning by building, not just consuming tutorials, and sharing every
+            project publicly through open source.
             
             **What I Do:**
-            - Design and deploy scalable ML systems
-            - Automate machine learning workflows
-            - Build production-ready data pipelines
-            - Create intelligent web applications
-            - Mentor and teach ML concepts
+            - Design AI systems, not just isolated models
+            - Build retrieval, training, and deployment pipelines
+            - Develop AI-powered developer tools
+            - Create practical products for real workflows
+            - Build in public and collaborate through open source
             """
         )
     
@@ -299,8 +300,8 @@ def render_developer_tab() -> None:
             st.markdown(
                 """
                 <div class="stat-box">
-                    <div class="stat-number">10+</div>
-                    <div class="stat-label">ML Projects</div>
+                    <div class="stat-number">3+</div>
+                    <div class="stat-label">Flagship AI Projects</div>
                 </div>
                 """,
                 unsafe_allow_html=True,
@@ -309,8 +310,8 @@ def render_developer_tab() -> None:
             st.markdown(
                 """
                 <div class="stat-box">
-                    <div class="stat-number">100%</div>
-                    <div class="stat-label">Dedication</div>
+                    <div class="stat-number">Open</div>
+                    <div class="stat-label">Source First</div>
                 </div>
                 """,
                 unsafe_allow_html=True,
@@ -319,8 +320,8 @@ def render_developer_tab() -> None:
             st.markdown(
                 """
                 <div class="stat-box">
-                    <div class="stat-number">1+</div>
-                    <div class="stat-label">Years Experience</div>
+                    <div class="stat-number">Build</div>
+                    <div class="stat-label">In Public</div>
                 </div>
                 """,
                 unsafe_allow_html=True,
@@ -337,32 +338,32 @@ def render_developer_tab() -> None:
         st.markdown(
             """
             **Machine Learning**
-            - Scikit-Learn, TensorFlow
-            - Classification & Regression
-            - Feature Engineering
-            - Model Optimization
+            - ML model training and evaluation
+            - Classification and regression workflows
+            - Feature engineering and preprocessing
+            - Performance benchmarking
             """
         )
     
     with col2:
         st.markdown(
             """
-            **Data Engineering**
-            - Pandas, NumPy, SQL
-            - Data Pipelines
-            - ETL Processing
-            - Data Validation
+            **Generative AI and LLM Apps**
+            - RAG application design
+            - Retrieval with FAISS and LangChain
+            - Explainable answer generation
+            - Prompt and pipeline orchestration
             """
         )
     
     with col3:
         st.markdown(
             """
-            **Web Development**
-            - Streamlit, Python
-            - FastAPI, Flask
-            - Full-Stack Integration
-            - UI/UX Design
+            **AI Developer Tooling and Systems**
+            - AI-powered CLI tools
+            - Backend systems for ML products
+            - FastAPI and Streamlit applications
+            - CI-ready engineering workflows
             """
         )
 
@@ -371,29 +372,28 @@ def render_developer_tab() -> None:
     col1, col2, col3 = st.columns(3)
     
     with col1:
-        st.markdown("""**Technologies:** Python, SQL, Git""")
+        st.markdown("""**Tech Stack:** Python • C++ • LangChain • FAISS""")
     with col2:
-        st.markdown("""**Tools:** Jupyter, VS Code, Docker""")
+        st.markdown("""**ML and App Stack:** Scikit-learn • Streamlit • FastAPI""")
     with col3:
-        st.markdown("""**Platforms:** AWS, GitHub, Streamlit Cloud""")
+        st.markdown("""**DevOps:** Docker • GitHub Actions • Git""")
 
     st.markdown("<hr class='divider'>", unsafe_allow_html=True)
 
     # Projects Section
     st.markdown("### 🚀 Featured Projects")
     
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns(3)
     
     with col1:
         st.markdown(
             """
             <div class="info-card">
-                <div class="info-icon">🎓</div>
-                <div class="info-title">AutoML Studio Pro</div>
+                <div class="info-icon">📚</div>
+                <div class="info-title">RAG AI for Document Q&A</div>
                 <div class="info-text">
-                    Enterprise-grade ML platform automating model training, evaluation, 
-                    and deployment. Features include advanced EDA, multi-metric optimization, 
-                    and production-ready artifact generation.
+                    Built a retrieval-augmented generation application for document question answering
+                    with explainable retrieval so users can trace answers back to source chunks.
                 </div>
             </div>
             """,
@@ -404,12 +404,26 @@ def render_developer_tab() -> None:
         st.markdown(
             """
             <div class="info-card">
-                <div class="info-icon">📊</div>
-                <div class="info-title">Data Analytics Suite</div>
+                <div class="info-icon">🧠</div>
+                <div class="info-title">AI Commit (Offline CLI)</div>
                 <div class="info-text">
-                    Comprehensive analytics platform with real-time dashboards, 
-                    advanced visualizations, and predictive analytics. Deployed 
-                    across multiple organizations.
+                    Developed a privacy-first CLI tool that generates intelligent Git commit messages
+                    using local LLMs, designed for offline developer workflows.
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+    with col3:
+        st.markdown(
+            """
+            <div class="info-card">
+                <div class="info-icon">⚙️</div>
+                <div class="info-title">AutoML Studio</div>
+                <div class="info-text">
+                    Built an end-to-end AutoML platform that automates EDA, preprocessing,
+                    training, and evaluation with practical deployment-ready outputs.
                 </div>
             </div>
             """,
@@ -419,33 +433,33 @@ def render_developer_tab() -> None:
     st.markdown("<hr class='divider'>", unsafe_allow_html=True)
 
     # Journey Section
-    st.markdown("### 🎯 Professional Journey")
+    st.markdown("### 🎯 Focus Areas")
     
     st.markdown(
         """
         <div class="timeline">
             <div class="timeline-item">
-                <div class="timeline-date">2020 - Present</div>
-                <div class="timeline-title">Full-Stack ML Engineer</div>
+                <div class="timeline-date">Current</div>
+                <div class="timeline-title">Machine Learning and Evaluation</div>
                 <div class="timeline-desc">
-                    Designing and deploying end-to-end machine learning solutions. 
-                    Specialized in AutoML platforms and production ML pipelines.
+                    Building reproducible ML workflows with clear evaluation, benchmarking,
+                    and practical model-selection pipelines.
                 </div>
             </div>
             <div class="timeline-item">
-                <div class="timeline-date">2018 - 2020</div>
-                <div class="timeline-title">Data Scientist</div>
+                <div class="timeline-date">Current</div>
+                <div class="timeline-title">Generative AI and LLM Applications</div>
                 <div class="timeline-desc">
-                    Built predictive models and analytics dashboards. 
-                    Led data-driven decision making initiatives.
+                    Designing RAG pipelines and LLM-powered applications focused on retrieval,
+                    explainability, and real utility.
                 </div>
             </div>
             <div class="timeline-item">
-                <div class="timeline-date">2016 - 2018</div>
-                <div class="timeline-title">Junior Developer</div>
+                <div class="timeline-date">Current</div>
+                <div class="timeline-title">AI-Powered Developer Tools and Backend Systems</div>
                 <div class="timeline-desc">
-                    Started with Python and data analysis. Developed foundation in 
-                    software engineering and best practices.
+                    Creating developer productivity tools and backend systems that make
+                    AI workflows faster, safer, and easier to adopt.
                 </div>
             </div>
         </div>
@@ -463,11 +477,10 @@ def render_developer_tab() -> None:
             """
             <div class="info-card">
                 <div class="info-icon">🎓</div>
-                <div class="info-title">Education</div>
+                <div class="info-title">Education and Approach</div>
                 <div class="info-text">
-                    Academic foundation in Computer Science with specialization 
-                    in Machine Learning and Data Science. Continuous learner 
-                    with certifications in advanced ML techniques.
+                    Computer Science Engineering student focused on applied AI systems.
+                    Strong belief in learning by building and validating ideas through real products.
                 </div>
             </div>
             """,
@@ -479,11 +492,10 @@ def render_developer_tab() -> None:
             """
             <div class="info-card">
                 <div class="info-icon">🌍</div>
-                <div class="info-title">Open Source</div>
+                <div class="info-title">Open Source and Collaboration</div>
                 <div class="info-text">
-                    Active contributor to open-source ML projects. 
-                    Passionate about sharing knowledge and building 
-                    community tools that help others succeed.
+                    Actively sharing projects in public repositories and open to collaboration,
+                    discussions, and building practical AI tools with the community.
                 </div>
             </div>
             """,
@@ -494,10 +506,10 @@ def render_developer_tab() -> None:
     st.markdown(
         """
         <div class="cta-section">
-            <div class="cta-title">Let's Connect! 🤝</div>
+            <div class="cta-title">Open to AI and GenAI Internships</div>
             <div class="cta-text">
-                I'm always excited to collaborate on interesting ML projects, discuss ML strategies, 
-                or help with your data science challenges.
+                Currently seeking AI, ML, and Generative AI internship opportunities where I can
+                contribute to real-world systems and grow as an engineer.
             </div>
         </div>
         """,
