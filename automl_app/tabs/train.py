@@ -4,6 +4,7 @@ import zipfile
 
 import joblib
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import streamlit as st
 from sklearn.inspection import permutation_importance
@@ -19,6 +20,7 @@ from automl_app.core.helpers import (
     is_classification,
     save_schema,
     select_best_model,
+    tune_top_models,
 )
 
 
@@ -94,6 +96,37 @@ def _profile_dataset(df: pd.DataFrame, target_col: str) -> dict[str, object]:
     return profile
 
 
+def _drop_high_corr_features(X_train: pd.DataFrame, X_test: pd.DataFrame, threshold: float = 0.98):
+    num_cols = X_train.select_dtypes(include=["number"]).columns.tolist()
+    if len(num_cols) < 2:
+        return X_train, X_test, []
+
+    corr = X_train[num_cols].corr().abs()
+    mask = np.triu(np.ones(corr.shape), k=1).astype(bool)
+    upper = corr.where(mask)
+    to_drop = [col for col in upper.columns if (upper[col] > threshold).any()]
+
+    if not to_drop:
+        return X_train, X_test, []
+    return X_train.drop(columns=to_drop, errors="ignore"), X_test.drop(columns=to_drop, errors="ignore"), to_drop
+
+
+def _clip_numeric_outliers(X_train: pd.DataFrame, X_test: pd.DataFrame, q_low: float = 0.01, q_high: float = 0.99):
+    num_cols = X_train.select_dtypes(include=["number"]).columns.tolist()
+    if not num_cols:
+        return X_train, X_test
+
+    train_clipped = X_train.copy()
+    test_clipped = X_test.copy()
+    low = train_clipped[num_cols].quantile(q_low)
+    high = train_clipped[num_cols].quantile(q_high)
+
+    for col in num_cols:
+        train_clipped[col] = train_clipped[col].clip(lower=low[col], upper=high[col])
+        test_clipped[col] = test_clipped[col].clip(lower=low[col], upper=high[col])
+    return train_clipped, test_clipped
+
+
 def render_train_tab() -> None:
     st.markdown("#### 1. Build Your Model")
     st.info("Upload data, train the AI, and inspect how it works.")
@@ -135,6 +168,18 @@ def render_train_tab() -> None:
             st.caption(f"Class Balance: {profile['balance_note']}")
         else:
             st.caption(f"Class Balance: {profile['balance_note']} (minor/major ratio: {ratio:.2f})")
+
+    classification_metric = "accuracy"
+    if profile["task"] == "classification":
+        metric_map = {
+            "Accuracy": "accuracy",
+            "F1 (Weighted)": "f1",
+            "ROC AUC": "roc_auc",
+        }
+        selected_metric = st.selectbox("🎯 Optimization Metric", list(metric_map.keys()), index=0)
+        classification_metric = metric_map[selected_metric]
+
+    enable_tuning = st.checkbox("⚙️ Enable lightweight hyperparameter tuning (top 2 models)", value=True)
 
     train_btn = st.button("🚀 Start Training")
 
@@ -196,6 +241,14 @@ def render_train_tab() -> None:
         if X_train.shape[0] < 2 or X_test.shape[0] < 1:
             raise ValueError("Dataset bohot chhota hai. Kam se kam 3-5 rows ka usable data chahiye.")
 
+        X_train, X_test, dropped_corr_cols = _drop_high_corr_features(X_train, X_test, threshold=0.98)
+        X_train, X_test = _clip_numeric_outliers(X_train, X_test)
+        if dropped_corr_cols:
+            status.write(f"🧪 Auto Feature Selection: {len(dropped_corr_cols)} highly-correlated feature(s) removed")
+
+        if X_train.shape[1] == 0:
+            raise ValueError("Auto feature selection ke baad koi feature nahi bacha. Data quality improve karke dobara try karein.")
+
         train_df = X.copy()
         train_df[target_col] = y_raw
         preprocessor, num_cols, cat_cols = build_preprocessor(train_df, target_col)
@@ -213,9 +266,33 @@ def render_train_tab() -> None:
             y_test=y_test,
             use_smote=use_smote,
             smote_k_neighbors=smote_k_neighbors,
+            classification_metric=classification_metric,
         )
         if pipeline is None or best_name is None or score is None:
             raise ValueError("Koi bhi model successfully train nahi hua. Data ko clean karke dobara try karein.")
+
+        if enable_tuning:
+            status.write("🎛️ Running lightweight hyperparameter tuning on top models...")
+            tuned_name, tuned_pipeline, tuned_score, tuned_rows = tune_top_models(
+                task=task,
+                preprocessor=preprocessor,
+                models=candidate_models,
+                leaderboard=leaderboard,
+                X_train=X_train,
+                y_train=y_train,
+                X_test=X_test,
+                y_test=y_test,
+                use_smote=use_smote,
+                smote_k_neighbors=smote_k_neighbors,
+                classification_metric=classification_metric,
+                top_n=2,
+            )
+            current_best = float(leaderboard[0]["score"]) if leaderboard else float("-inf")
+            if tuned_pipeline is not None and tuned_score is not None and float(tuned_score) > current_best:
+                pipeline = tuned_pipeline
+                best_name = tuned_name or best_name
+                score = float(tuned_score)
+                leaderboard = tuned_rows + leaderboard
 
         best_row = next((row for row in leaderboard if row.get("model") == best_name), None)
         displayed_score = float(best_row["score"]) if best_row and best_row.get("score") is not None else float(score)
@@ -237,6 +314,8 @@ def render_train_tab() -> None:
         st.caption(f"Best Model Selected: {best_name}")
         if cv_score is not None and pd.notna(cv_score):
             st.caption(f"Cross-Validation Score (mean): {float(cv_score):.4f}")
+        if task == "classification":
+            st.caption(f"Optimization Metric Used: {classification_metric}")
 
         leaderboard_df = pd.DataFrame(leaderboard)
         if not leaderboard_df.empty:

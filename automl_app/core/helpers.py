@@ -21,6 +21,7 @@ from sklearn.ensemble import (
 )
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import ElasticNet, Lasso, LinearRegression, LogisticRegression, Ridge
+from sklearn.metrics import accuracy_score, f1_score, roc_auc_score
 from sklearn.model_selection import KFold, StratifiedKFold, cross_val_score
 from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
 from sklearn.pipeline import Pipeline
@@ -239,6 +240,150 @@ def build_model_pipeline(
     return Pipeline(steps)
 
 
+def _get_classification_scoring_name(classification_metric: str, y_train) -> str:
+    metric = (classification_metric or "accuracy").lower()
+    if metric == "f1":
+        return "f1_weighted"
+    if metric == "roc_auc":
+        classes = pd.Series(y_train).nunique(dropna=False)
+        return "roc_auc" if int(classes) == 2 else "roc_auc_ovr_weighted"
+    return "accuracy"
+
+
+def _evaluate_pipeline_score(
+    task: str,
+    pipeline,
+    X_test: pd.DataFrame,
+    y_test,
+    classification_metric: str = "accuracy",
+) -> float:
+    if task != "classification":
+        return float(pipeline.score(X_test, y_test))
+
+    metric = (classification_metric or "accuracy").lower()
+    y_pred = pipeline.predict(X_test)
+
+    if metric == "f1":
+        return float(f1_score(y_test, y_pred, average="weighted"))
+    if metric == "roc_auc":
+        try:
+            y_prob = pipeline.predict_proba(X_test)
+            classes = pd.Series(y_test).nunique(dropna=False)
+            if int(classes) == 2:
+                return float(roc_auc_score(y_test, y_prob[:, 1]))
+            return float(roc_auc_score(y_test, y_prob, multi_class="ovr", average="weighted"))
+        except Exception:
+            return float("nan")
+    return float(accuracy_score(y_test, y_pred))
+
+
+def _build_tuned_variants(task: str, model_name: str):
+    if task == "classification":
+        if model_name == "RandomForest":
+            return [
+                RandomForestClassifier(n_estimators=300, max_features="sqrt", min_samples_leaf=1, random_state=42, n_jobs=-1),
+                RandomForestClassifier(n_estimators=700, max_features="sqrt", min_samples_leaf=2, random_state=42, n_jobs=-1),
+            ]
+        if model_name == "ExtraTrees":
+            return [
+                ExtraTreesClassifier(n_estimators=400, max_features="sqrt", min_samples_leaf=1, random_state=42, n_jobs=-1),
+                ExtraTreesClassifier(n_estimators=800, max_features="sqrt", min_samples_leaf=2, random_state=42, n_jobs=-1),
+            ]
+        if model_name == "HistGradientBoosting":
+            return [
+                HistGradientBoostingClassifier(learning_rate=0.03, max_leaf_nodes=31, min_samples_leaf=20, random_state=42),
+                HistGradientBoostingClassifier(learning_rate=0.05, max_leaf_nodes=63, min_samples_leaf=10, random_state=42),
+            ]
+        if model_name == "LogisticRegression":
+            return [
+                LogisticRegression(C=0.7, max_iter=2500, class_weight="balanced"),
+                LogisticRegression(C=1.5, max_iter=2500, class_weight="balanced"),
+            ]
+        if model_name == "KNN":
+            return [
+                KNeighborsClassifier(n_neighbors=3, weights="distance"),
+                KNeighborsClassifier(n_neighbors=9, weights="distance"),
+            ]
+        return []
+
+    if model_name == "RandomForest":
+        return [
+            RandomForestRegressor(n_estimators=300, max_features="sqrt", min_samples_leaf=1, random_state=42, n_jobs=-1),
+            RandomForestRegressor(n_estimators=700, max_features="sqrt", min_samples_leaf=2, random_state=42, n_jobs=-1),
+        ]
+    if model_name == "ExtraTrees":
+        return [
+            ExtraTreesRegressor(n_estimators=400, max_features="sqrt", min_samples_leaf=1, random_state=42, n_jobs=-1),
+            ExtraTreesRegressor(n_estimators=800, max_features="sqrt", min_samples_leaf=2, random_state=42, n_jobs=-1),
+        ]
+    if model_name == "HistGradientBoosting":
+        return [
+            HistGradientBoostingRegressor(learning_rate=0.03, max_leaf_nodes=31, min_samples_leaf=20, random_state=42),
+            HistGradientBoostingRegressor(learning_rate=0.05, max_leaf_nodes=63, min_samples_leaf=10, random_state=42),
+        ]
+    if model_name == "KNN":
+        return [
+            KNeighborsRegressor(n_neighbors=3, weights="distance"),
+            KNeighborsRegressor(n_neighbors=9, weights="distance"),
+        ]
+    return []
+
+
+def tune_top_models(
+    task: str,
+    preprocessor: ColumnTransformer,
+    models: dict,
+    leaderboard: list[dict[str, object]],
+    X_train: pd.DataFrame,
+    y_train,
+    X_test: pd.DataFrame,
+    y_test,
+    use_smote: bool = False,
+    smote_k_neighbors: int = 3,
+    classification_metric: str = "accuracy",
+    top_n: int = 2,
+):
+    tuned_rows: list[dict[str, object]] = []
+    top_names = [str(row.get("model")) for row in leaderboard[:top_n] if row.get("model") in models]
+
+    best_name = None
+    best_pipeline = None
+    best_score = None
+
+    for name in top_names:
+        base_model = models[name]
+        variants = [clone(base_model)] + _build_tuned_variants(task, name)
+        for idx, variant in enumerate(variants):
+            display_name = f"{name}-tuned-{idx}"
+            pipeline = build_model_pipeline(
+                task,
+                preprocessor,
+                variant,
+                use_smote=use_smote,
+                smote_k_neighbors=smote_k_neighbors,
+            )
+            try:
+                pipeline.fit(X_train, y_train)
+                score = _evaluate_pipeline_score(
+                    task,
+                    pipeline,
+                    X_test,
+                    y_test,
+                    classification_metric=classification_metric,
+                )
+            except Exception:
+                continue
+
+            tuned_rows.append({"model": display_name, "score": float(score)})
+            if best_score is None or score > best_score:
+                best_name = display_name
+                best_score = float(score)
+                best_pipeline = pipeline
+
+    tuned_rows.sort(key=lambda item: item["score"], reverse=True)
+    return best_name, best_pipeline, best_score, tuned_rows
+
+
 def select_best_model(
     task: str,
     preprocessor: ColumnTransformer,
@@ -249,6 +394,7 @@ def select_best_model(
     y_test,
     use_smote: bool = False,
     smote_k_neighbors: int = 3,
+    classification_metric: str = "accuracy",
 ):
     leaderboard: list[dict[str, object]] = []
     best_name = None
@@ -280,20 +426,33 @@ def select_best_model(
         )
         try:
             pipeline.fit(X_train, y_train)
-            score = float(pipeline.score(X_test, y_test))
+            score = _evaluate_pipeline_score(
+                task,
+                pipeline,
+                X_test,
+                y_test,
+                classification_metric=classification_metric,
+            )
         except Exception:
             if task != "classification" or not use_smote:
                 continue
             try:
                 pipeline = build_model_pipeline(task, preprocessor, model, use_smote=False)
                 pipeline.fit(X_train, y_train)
-                score = float(pipeline.score(X_test, y_test))
+                score = _evaluate_pipeline_score(
+                    task,
+                    pipeline,
+                    X_test,
+                    y_test,
+                    classification_metric=classification_metric,
+                )
             except Exception:
                 continue
 
         cv_score = np.nan
         if cv_splitter is not None:
             try:
+                scoring_name = _get_classification_scoring_name(classification_metric, y_train) if task == "classification" else "r2"
                 cv_pipeline = build_model_pipeline(
                     task,
                     preprocessor,
@@ -301,7 +460,7 @@ def select_best_model(
                     use_smote=use_smote,
                     smote_k_neighbors=smote_k_neighbors,
                 )
-                cv_values = cross_val_score(cv_pipeline, X_train, y_train, cv=cv_splitter, n_jobs=-1)
+                cv_values = cross_val_score(cv_pipeline, X_train, y_train, cv=cv_splitter, scoring=scoring_name, n_jobs=-1)
                 cv_score = float(np.mean(cv_values))
             except Exception:
                 cv_score = np.nan

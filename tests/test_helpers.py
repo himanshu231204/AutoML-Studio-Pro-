@@ -106,4 +106,4 @@ def test_select_best_model_returns_sorted_leaderboard() -> None:
     assert best_pipeline is not None
     assert isinstance(best_score, float)
     assert len(leaderboard) >= 1
-    assert leaderboard == sorted(leaderboard, key=lambda item: item["score"], reverse=True)
+    assert leaderboard == sorted(leaderboard, key=lambda item: item["ranking_score"], reverse=True)
