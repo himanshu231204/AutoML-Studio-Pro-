@@ -107,13 +107,6 @@ def render_developer_tab() -> None:
                 box-shadow: 0 12px 32px rgba(22, 179, 160, 0.3);
             }
 
-            .info-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-                gap: 1.5rem;
-                margin: 2.5rem 0;
-            }
-
             .info-card {
                 background: #132231;
                 border: 1px solid #2b4257;
@@ -146,25 +139,6 @@ def render_developer_tab() -> None:
                 color: #a9bfd6;
                 font-size: 0.95rem;
                 line-height: 1.6;
-            }
-
-            .skill-tag {
-                display: inline-block;
-                background: rgba(22, 179, 160, 0.15);
-                border: 1px solid rgba(22, 179, 160, 0.4);
-                color: #16b3a0;
-                padding: 0.4rem 0.9rem;
-                border-radius: 20px;
-                font-size: 0.85rem;
-                font-weight: 600;
-                margin: 0.4rem 0.4rem 0.4rem 0;
-                transition: all 0.25s ease;
-            }
-
-            .skill-tag:hover {
-                background: rgba(22, 179, 160, 0.25);
-                border-color: #16b3a0;
-                transform: translateY(-2px);
             }
 
             .divider {
