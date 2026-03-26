@@ -4,6 +4,7 @@ import streamlit as st
 
 from automl_app.core.config import setup_page
 from automl_app.tabs.analysis import render_analysis_tab
+from automl_app.tabs.developer import render_developer_tab
 from automl_app.tabs.manual import render_manual_tab
 from automl_app.tabs.prediction import render_prediction_tab
 from automl_app.tabs.train import render_train_tab
@@ -39,11 +40,12 @@ def main() -> None:
         unsafe_allow_html=True,
     )
 
-    tab1, tab2, tab3, tab4 = st.tabs([
+    tab1, tab2, tab3, tab4, tab5 = st.tabs([
         "🚀 Train & Learn",
         "📊 Data Analysis",
         "🔮 Predictions",
         "📘 Guide",
+        "👨‍💻 Developer",
     ])
 
     with tab1:
@@ -57,6 +59,9 @@ def main() -> None:
 
     with tab4:
         render_manual_tab()
+
+    with tab5:
+        render_developer_tab()
 
     render_footer()
 

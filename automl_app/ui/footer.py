@@ -74,16 +74,19 @@ def render_footer() -> None:
                 <div class="footer-author">👨‍💻 Developed by Himanshu Kumar</div>
                 <div style="font-size: 13px; margin-bottom: 1rem;">Intelligent ML Model Training & Deployment Platform</div>
                 <div class="footer-links">
-                    <a href="https://www.linkedin.com/in/himanshu231204" target="_blank" rel="noopener noreferrer">
-                        🔗 LinkedIn
+                    <a href="https://www.linkedin.com/in/himanshu231204/" target="_blank" rel="noopener noreferrer">
+                        💼 LinkedIn
                     </a>
                     <a href="https://github.com/himanshu231204" target="_blank" rel="noopener noreferrer">
                         🐙 GitHub
                     </a>
+                    <a href="https://x.com/himanshu231204" target="_blank" rel="noopener noreferrer">
+                        🐦 Twitter/X
+                    </a>
                 </div>
                 <div class="footer-badge">✨ Production Ready v1.0</div>
                 <div style="margin-top: 1.5rem; font-size: 12px; color: var(--muted); opacity: 0.8;">
-                    © 2025 AutoML Studio Pro. All rights reserved.<br>
+                    © 2026 AutoML Studio Pro. All rights reserved.<br>
                     Built with ❤️ using Streamlit, Scikit-Learn & Python
                 </div>
             </div>

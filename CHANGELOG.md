@@ -50,6 +50,17 @@ All notable changes to this project are documented in this file.
   - Enhanced footer with social links, badges, and premium styling
   - Smooth animations: fadeSlideIn, shimmer, glow, and pulse effects
   - Responsive design optimizations for mobile and tablet devices
+- New Developer Info Tab:
+  - Professional developer introduction and biography
+  - Social media links (LinkedIn, GitHub, Email)
+  - Skills and competencies showcase
+  - Featured projects section
+  - Professional timeline/journey visualization
+  - Education and open-source contribution info
+  - Call-to-action with contact options
+  - Premium styling with animations and interactive cards
+  - Smooth animations: fadeSlideIn, shimmer, glow, and pulse effects
+  - Responsive design optimizations for mobile and tablet devices
 - Comprehensive Professional User Manual:
   - Getting Started section with 3-step quick start guide
   - Detailed Train & Learn tab guide with feature engineering options
@@ -78,6 +89,11 @@ All notable changes to this project are documented in this file.
 - Added optional top-model lightweight tuning with time budget support.
 - Training summary now shows selected training mode, optimization metric, and budget context.
 - Unit test workflow Python matrix updated to 3.11/3.12/3.13 to match dependency constraints (`contourpy==1.3.3` requires Python >= 3.11).
+- Developer Info tab updated with verified social media handles:
+  - LinkedIn: https://www.linkedin.com/in/himanshu231204/
+  - GitHub: https://github.com/himanshu231204
+  - Twitter/X: https://x.com/himanshu231204
+- Footer social links updated to include Twitter/X and verified all profiles
 
 ### Tests
 - Updated helper tests for ranking-score-based leaderboard order.
