@@ -1,5 +1,6 @@
 import json
 import os
+import time
 
 import numpy as np
 import pandas as pd
@@ -154,8 +155,28 @@ print(f\"Model Score: {{pipeline.score(X_test, y_test)}}\")
 """
 
 
-def get_candidate_models(task: str):
+def get_candidate_models(task: str, training_mode: str = "high_accuracy"):
+    mode = (training_mode or "high_accuracy").lower()
     if task == "classification":
+        if mode == "fast":
+            return {
+                "HistGradientBoosting": HistGradientBoostingClassifier(
+                    learning_rate=0.06,
+                    max_leaf_nodes=31,
+                    min_samples_leaf=20,
+                    random_state=42,
+                ),
+                "RandomForest": RandomForestClassifier(
+                    n_estimators=250,
+                    max_features="sqrt",
+                    min_samples_leaf=2,
+                    class_weight="balanced_subsample",
+                    random_state=42,
+                    n_jobs=-1,
+                ),
+                "LogisticRegression": LogisticRegression(max_iter=1500, class_weight="balanced"),
+                "KNN": KNeighborsClassifier(n_neighbors=5, weights="distance"),
+            }
         return {
             "HistGradientBoosting": HistGradientBoostingClassifier(
                 learning_rate=0.05,
@@ -186,6 +207,25 @@ def get_candidate_models(task: str):
             "DecisionTree": DecisionTreeClassifier(class_weight="balanced", random_state=42),
             "LogisticRegression": LogisticRegression(max_iter=2000, class_weight="balanced"),
             "KNN": KNeighborsClassifier(n_neighbors=5, weights="distance"),
+        }
+
+    if mode == "fast":
+        return {
+            "HistGradientBoosting": HistGradientBoostingRegressor(
+                learning_rate=0.06,
+                max_leaf_nodes=31,
+                min_samples_leaf=20,
+                random_state=42,
+            ),
+            "RandomForest": RandomForestRegressor(
+                n_estimators=250,
+                max_features="sqrt",
+                min_samples_leaf=2,
+                random_state=42,
+                n_jobs=-1,
+            ),
+            "Ridge": Ridge(alpha=1.0),
+            "KNN": KNeighborsRegressor(n_neighbors=5, weights="distance"),
         }
 
     return {
@@ -277,6 +317,25 @@ def _evaluate_pipeline_score(
     return float(accuracy_score(y_test, y_pred))
 
 
+def _classification_metric_breakdown(pipeline, X_test: pd.DataFrame, y_test) -> dict[str, float]:
+    y_pred = pipeline.predict(X_test)
+    out = {
+        "accuracy": float(accuracy_score(y_test, y_pred)),
+        "f1": float(f1_score(y_test, y_pred, average="weighted")),
+        "roc_auc": float("nan"),
+    }
+    try:
+        y_prob = pipeline.predict_proba(X_test)
+        classes = pd.Series(y_test).nunique(dropna=False)
+        if int(classes) == 2:
+            out["roc_auc"] = float(roc_auc_score(y_test, y_prob[:, 1]))
+        else:
+            out["roc_auc"] = float(roc_auc_score(y_test, y_prob, multi_class="ovr", average="weighted"))
+    except Exception:
+        pass
+    return out
+
+
 def _build_tuned_variants(task: str, model_name: str):
     if task == "classification":
         if model_name == "RandomForest":
@@ -342,7 +401,10 @@ def tune_top_models(
     smote_k_neighbors: int = 3,
     classification_metric: str = "accuracy",
     top_n: int = 2,
+    time_budget_sec: int | None = None,
 ):
+    start_time = time.perf_counter()
+
     tuned_rows: list[dict[str, object]] = []
     top_names = [str(row.get("model")) for row in leaderboard[:top_n] if row.get("model") in models]
 
@@ -351,9 +413,13 @@ def tune_top_models(
     best_score = None
 
     for name in top_names:
+        if time_budget_sec is not None and (time.perf_counter() - start_time) >= float(time_budget_sec):
+            break
         base_model = models[name]
         variants = [clone(base_model)] + _build_tuned_variants(task, name)
         for idx, variant in enumerate(variants):
+            if time_budget_sec is not None and (time.perf_counter() - start_time) >= float(time_budget_sec):
+                break
             display_name = f"{name}-tuned-{idx}"
             pipeline = build_model_pipeline(
                 task,
@@ -374,7 +440,10 @@ def tune_top_models(
             except Exception:
                 continue
 
-            tuned_rows.append({"model": display_name, "score": float(score)})
+            row = {"model": display_name, "score": float(score)}
+            if task == "classification":
+                row.update(_classification_metric_breakdown(pipeline, X_test, y_test))
+            tuned_rows.append(row)
             if best_score is None or score > best_score:
                 best_name = display_name
                 best_score = float(score)
@@ -395,7 +464,10 @@ def select_best_model(
     use_smote: bool = False,
     smote_k_neighbors: int = 3,
     classification_metric: str = "accuracy",
+    time_budget_sec: int | None = None,
 ):
+    start_time = time.perf_counter()
+
     leaderboard: list[dict[str, object]] = []
     best_name = None
     best_pipeline = None
@@ -417,6 +489,8 @@ def select_best_model(
             cv_splitter = KFold(n_splits=cv_n_splits, shuffle=True, random_state=42)
 
     for model_name, model in models.items():
+        if time_budget_sec is not None and (time.perf_counter() - start_time) >= float(time_budget_sec):
+            break
         pipeline = build_model_pipeline(
             task,
             preprocessor,
@@ -469,12 +543,16 @@ def select_best_model(
         if not np.isnan(cv_score):
             ranking_score = float((0.7 * cv_score) + (0.3 * score))
 
-        leaderboard.append({
+        row = {
             "model": model_name,
             "score": score,
             "cv_score": cv_score,
             "ranking_score": ranking_score,
-        })
+        }
+        if task == "classification":
+            row.update(_classification_metric_breakdown(pipeline, X_test, y_test))
+
+        leaderboard.append(row)
         if best_score is None or ranking_score > best_score:
             best_name = model_name
             best_score = ranking_score

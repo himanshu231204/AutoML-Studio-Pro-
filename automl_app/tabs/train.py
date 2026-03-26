@@ -169,6 +169,11 @@ def render_train_tab() -> None:
         else:
             st.caption(f"Class Balance: {profile['balance_note']} (minor/major ratio: {ratio:.2f})")
 
+    training_mode = st.selectbox("⚡ Training Mode", ["Fast", "High Accuracy"], index=1)
+    training_mode_value = "fast" if training_mode == "Fast" else "high_accuracy"
+
+    time_budget_sec = st.slider("⏱️ Training Time Budget (seconds)", min_value=15, max_value=300, value=90, step=15)
+
     classification_metric = "accuracy"
     if profile["task"] == "classification":
         metric_map = {
@@ -179,7 +184,7 @@ def render_train_tab() -> None:
         selected_metric = st.selectbox("🎯 Optimization Metric", list(metric_map.keys()), index=0)
         classification_metric = metric_map[selected_metric]
 
-    enable_tuning = st.checkbox("⚙️ Enable lightweight hyperparameter tuning (top 2 models)", value=True)
+    enable_tuning = st.checkbox("⚙️ Enable lightweight hyperparameter tuning (top models)", value=True)
 
     train_btn = st.button("🚀 Start Training")
 
@@ -255,7 +260,7 @@ def render_train_tab() -> None:
         save_schema(X_train, num_cols, cat_cols, task, label_encoder, y=y_orig)
 
         status.write("🧠 Training Multiple Models...")
-        candidate_models = get_candidate_models(task)
+        candidate_models = get_candidate_models(task, training_mode=training_mode_value)
         best_name, pipeline, score, leaderboard = select_best_model(
             task=task,
             preprocessor=preprocessor,
@@ -267,12 +272,15 @@ def render_train_tab() -> None:
             use_smote=use_smote,
             smote_k_neighbors=smote_k_neighbors,
             classification_metric=classification_metric,
+            time_budget_sec=time_budget_sec,
         )
         if pipeline is None or best_name is None or score is None:
             raise ValueError("Koi bhi model successfully train nahi hua. Data ko clean karke dobara try karein.")
 
         if enable_tuning:
             status.write("🎛️ Running lightweight hyperparameter tuning on top models...")
+            tune_top_n = 1 if training_mode_value == "fast" else 2
+            tuning_budget = max(10, time_budget_sec // 3)
             tuned_name, tuned_pipeline, tuned_score, tuned_rows = tune_top_models(
                 task=task,
                 preprocessor=preprocessor,
@@ -285,7 +293,8 @@ def render_train_tab() -> None:
                 use_smote=use_smote,
                 smote_k_neighbors=smote_k_neighbors,
                 classification_metric=classification_metric,
-                top_n=2,
+                top_n=tune_top_n,
+                time_budget_sec=tuning_budget,
             )
             current_best = float(leaderboard[0]["score"]) if leaderboard else float("-inf")
             if tuned_pipeline is not None and tuned_score is not None and float(tuned_score) > current_best:
@@ -316,10 +325,11 @@ def render_train_tab() -> None:
             st.caption(f"Cross-Validation Score (mean): {float(cv_score):.4f}")
         if task == "classification":
             st.caption(f"Optimization Metric Used: {classification_metric}")
+        st.caption(f"Training Mode: {training_mode} | Time Budget: {time_budget_sec}s")
 
         leaderboard_df = pd.DataFrame(leaderboard)
         if not leaderboard_df.empty:
-            for col in ["score", "cv_score", "ranking_score"]:
+            for col in ["score", "cv_score", "ranking_score", "accuracy", "f1", "roc_auc"]:
                 if col in leaderboard_df.columns:
                     leaderboard_df[col] = leaderboard_df[col].round(4)
             st.markdown("##### 🏁 Model Leaderboard")

@@ -107,3 +107,13 @@ def test_select_best_model_returns_sorted_leaderboard() -> None:
     assert isinstance(best_score, float)
     assert len(leaderboard) >= 1
     assert leaderboard == sorted(leaderboard, key=lambda item: item["ranking_score"], reverse=True)
+
+
+def test_get_candidate_models_fast_mode_is_smaller() -> None:
+    cls_fast = helpers.get_candidate_models("classification", training_mode="fast")
+    cls_high = helpers.get_candidate_models("classification", training_mode="high_accuracy")
+    reg_fast = helpers.get_candidate_models("regression", training_mode="fast")
+    reg_high = helpers.get_candidate_models("regression", training_mode="high_accuracy")
+
+    assert len(cls_fast) < len(cls_high)
+    assert len(reg_fast) < len(reg_high)
