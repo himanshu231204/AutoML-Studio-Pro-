@@ -4,6 +4,8 @@
 
 **A no-code, end-to-end automated machine learning platform for training, evaluating, and deploying ML models—right from your browser.**
 
+[![Version](https://img.shields.io/badge/Version-1.3.0-0078D4?style=for-the-badge)](CHANGELOG.md)
+&nbsp;
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Visit%20App-0078D4?style=for-the-badge&logo=streamlit&logoColor=white)](https://automl-studio-pro-on5vfj7azahvyvdj9fyh7b.streamlit.app/)
 &nbsp;
 [![Python 3.9+](https://img.shields.io/badge/Python-3.9%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
@@ -52,19 +54,72 @@ Built with [Streamlit](https://streamlit.io/) and [Scikit-Learn](https://scikit-
 
 ## Key Features
 
-| Category | Feature | Description |
-|---|---|---|
-| **AutoML Engine** | Automatic Task Detection | Determines whether the problem is classification or regression based on the target column. |
-| | Automated Preprocessing | Handles missing values, encoding, and feature scaling via Scikit-Learn pipelines. |
-| | Intelligent Model Selection | Trains a `HistGradientBoosting` model optimized for accuracy and speed. |
-| | Imbalanced Data Handling | Applies SMOTE oversampling for skewed classification datasets. |
-| **Data Insights** | Exploratory Data Analysis | Generates descriptive statistics and correlation heatmaps instantly. |
-| | Feature Importance (XAI) | Uses permutation importance to explain model predictions transparently. |
-| | Performance Metrics | Displays confusion matrices, accuracy scores, R² scores, and prediction plots. |
-| **Export & Deploy** | Model Export | Download trained models as `.zip` archives for reuse. |
-| | Python Code Export | Export a ready-to-run `train_model.py` script for learning and customization. |
-| | Batch Predictions | Upload CSV files to generate predictions at scale. |
-| | Dynamic Prediction Form | Auto-generated input form based on dataset schema for single predictions. |
+### 🚀 AutoML Engine
+
+| Feature | Description |
+|---|---|
+| Automatic Task Detection | Determines whether the problem is classification or regression based on the target column. |
+| Automated Preprocessing | Handles missing values, encoding, and feature scaling via Scikit-Learn pipelines. |
+| Intelligent Model Selection | Trains multiple models (RandomForest, GradientBoosting, XGBoost, etc.) and selects the best. |
+| Imbalanced Data Handling | Applies SMOTE oversampling for skewed classification datasets. |
+| Hyperparameter Tuning | Lightweight tuning with Optuna integration for advanced optimization. |
+| Ensemble Models | Combine multiple models using voting or stacking ensembles. |
+
+### 📊 Data Insights
+
+| Feature | Description |
+|---|---|
+| Exploratory Data Analysis | Generates descriptive statistics, outlier detection, and correlation heatmaps. |
+| Advanced EDA Analytics | Six comprehensive tabs: Statistics, Target Analysis, Correlations, Distributions, Data Quality, Variance. |
+| Feature Importance (XAI) | Uses permutation importance and SHAP values to explain model predictions. |
+| Performance Metrics | Displays confusion matrices, accuracy scores, R² scores, and prediction plots. |
+| Cross-Validation Visualization | Bar charts and histograms showing CV scores across models. |
+
+### 🔧 Feature Engineering
+
+| Feature | Description |
+|---|---|
+| Polynomial Features | Automatically creates polynomial features to capture non-linear relationships. |
+| Interaction Features | Generates feature interactions to discover combined effects. |
+| Statistical Aggregations | Creates row-wise statistics (mean, std, min, max) for numeric features. |
+| Missing Value Strategies | Choose from median, mean, most_frequent, or constant imputation. |
+| Preprocessing Preview | Visual preview of all preprocessing steps before training. |
+
+### 🧠 Advanced ML
+
+| Feature | Description |
+|---|---|
+| SHAP Explainable AI | Model interpretability with SHAP values and feature explanations. |
+| Optuna Optimization | Advanced hyperparameter optimization with configurable trials. |
+| NLP/Text Classification | TF-IDF text preprocessing with configurable n-gram ranges. |
+| Time Series Forecasting | ARIMA and Exponential Smoothing models for temporal data. |
+| Data Versioning | Track and compare datasets across versions with MD5 hashing. |
+
+### 📁 Sample Datasets
+
+| Feature | Description |
+|---|---|
+| Built-in Datasets | Iris, Wine, Breast Cancer, and Diabetes datasets for quick demos. |
+| One-Click Loading | Load sample datasets instantly without uploading files. |
+
+### 💾 Export & Deploy
+
+| Feature | Description |
+|---|---|
+| Model Export | Download trained models as `.zip` archives for reuse. |
+| Python Code Export | Export a ready-to-run `train_model.py` script for learning and customization. |
+| PDF Report Export | Generate HTML reports with model details and metrics. |
+| Batch Predictions | Upload CSV files to generate predictions at scale. |
+| Dynamic Prediction Form | Auto-generated input form based on dataset schema for single predictions. |
+| Model History | Track and compare previously trained models with visualizations. |
+
+### 🎨 User Experience
+
+| Feature | Description |
+|---|---|
+| Dark/Light Theme | Toggle between dark and light themes via sidebar. |
+| Responsive Design | Optimized for desktop, tablet, and mobile devices. |
+| Real-time Feedback | Live status updates during training with progress indicators. |
 
 ---
 
@@ -73,7 +128,10 @@ Built with [Streamlit](https://streamlit.io/) and [Scikit-Learn](https://scikit-
 | Layer | Technology |
 |---|---|
 | Frontend / UI | [Streamlit](https://streamlit.io/) |
-| Machine Learning | [Scikit-Learn](https://scikit-learn.org/) — HistGradientBoosting, Pipelines |
+| Machine Learning | [Scikit-Learn](https://scikit-learn.org/) — RandomForest, GradientBoosting, XGBoost, Pipelines |
+| Hyperparameter Optimization | [Optuna](https://optuna.org/) |
+| Explainable AI | [SHAP](https://shap.readthedocs.io/) |
+| Time Series | [Statsmodels](https://www.statsmodels.org/) — ARIMA, Exponential Smoothing |
 | Data Processing | [Pandas](https://pandas.pydata.org/), [NumPy](https://numpy.org/) |
 | Visualization | [Matplotlib](https://matplotlib.org/), [Seaborn](https://seaborn.pydata.org/) |
 | Model Serialization | [Joblib](https://joblib.readthedocs.io/) |
@@ -168,7 +226,9 @@ Troubleshooting:
 ```
 ├── .github/                    # CI/CD and community files
 │   ├── ISSUE_TEMPLATE/         # Bug report and feature request templates
-│   └── workflows/              # GitHub Actions pipelines
+│   └── workflows/              # GitHub Actions pipelines (ci.yml, cd.yml, tests.yml)
+├── .streamlit/                 # Streamlit Cloud configuration
+│   └── config.toml             # Server and theme settings
 ├── artifacts/                  # Auto-generated models & schema files
 ├── assets/
 │   └── images/
@@ -176,15 +236,30 @@ Troubleshooting:
 │       └── screenshots/        # UI screenshots for README/docs
 ├── automl_app/
 │   ├── core/                   # Shared config and helper utilities
+│   │   ├── config.py           # Page setup, theming, CSS
+│   │   └── helpers.py          # ML utilities (preprocessing, model selection, etc.)
 │   └── ui/                     # Reusable UI components and tab modules
-│       ├── tabs/               # Streamlit tab modules (train, analysis, prediction, guide, developer)
+│       ├── tabs/               # Streamlit tab modules
+│       │   ├── train.py        # Training tab with all Phase 1 & 2 features
+│       │   ├── analysis.py     # Advanced EDA with 6 sub-tabs
+│       │   ├── prediction.py   # Single and batch predictions
+│       │   ├── manual.py       # User guide
+│       │   └── developer.py    # Developer info
 │       └── footer.py           # Shared footer component
 ├── docs/
 │   ├── api/                    # API/exported interface docs
 │   └── guides/                 # User and developer guides
 ├── tests/                      # Unit tests
+│   ├── test_phase1_features.py # Phase 1 feature tests
+│   ├── test_helpers.py         # Helper function tests
+│   └── test_train_utils.py     # Training utility tests
 ├── app.py                      # Main Streamlit application
-├── requirements.txt            # Required Python packages
+├── Dockerfile                  # Multi-stage Docker build
+├── docker-compose.yml          # Docker Compose configuration
+├── requirements.txt            # Production dependencies
+├── requirements-dev.txt        # Development dependencies
+├── FEATURES_ROADMAP.md         # Feature roadmap and status
+├── CHANGELOG.md                # Version history
 └── README.md                   # Project documentation
 ```
 
@@ -198,11 +273,44 @@ Troubleshooting:
 
 ## Usage
 
-1. **Train & Learn** — Upload a CSV file, select the target column, and click **Start Training**. The platform preprocesses data, trains a model, and displays performance metrics along with feature importance charts. Download the trained model or export the equivalent Python code.
+### 1. Train & Learn
 
-2. **Data Analysis** — Explore the uploaded dataset through descriptive statistics and correlation heatmaps before training.
+Upload a CSV file or load a sample dataset, then configure your training:
 
-3. **Production Engine** — Load a previously trained model or use the current session model. Make single predictions via a dynamically generated form, or upload a CSV for batch inference.
+- **Select Target Column** — Choose the column to predict
+- **Training Mode** — Fast or High Accuracy mode
+- **Missing Value Strategy** — Choose imputation method (median/mean/most_frequent/constant)
+- **Feature Engineering** — Enable polynomial features, interactions, or aggregations
+- **Advanced AutoML** — Enable Optuna for hyperparameter optimization
+- **Ensemble Models** — Combine multiple models with voting/stacking
+- **NLP/Text** — Enable TF-IDF for text classification
+- **Time Series** — Enable ARIMA/ETS for temporal forecasting
+
+Click **Start Training** to run the AutoML pipeline. View results including:
+- Model leaderboard with cross-validation scores
+- Feature importance and SHAP explanations
+- Confusion matrices and prediction plots
+- Model history and comparison dashboard
+
+Download the trained model or export the equivalent Python code.
+
+### 2. Data Analysis
+
+Explore the uploaded dataset through six comprehensive analysis tabs:
+- **Statistics** — Skewness, kurtosis, and detailed statistical summaries
+- **Target Analysis** — Class balance detection and distribution visualization
+- **Correlations** — Feature correlations with heatmap visualization
+- **Distributions** — Histograms, KDE, and Q-Q plots
+- **Data Quality** — Completeness, uniqueness, and quality scores
+- **Variance Analysis** — Feature variance contribution analysis
+
+### 3. Production Engine
+
+Load a previously trained model or use the current session model:
+- **Single Predictions** — Dynamic form based on dataset schema
+- **Batch Predictions** — Upload CSV for bulk inference
+- **Model Export** — Download as `.zip` archive
+- **Report Export** — Generate HTML report with metrics
 
 ---
 
@@ -221,7 +329,7 @@ For technical design details, see [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ## Suggested Repository Topics
 
-`automl` · `machine-learning` · `no-code` · `streamlit` · `scikit-learn` · `data-science` · `python` · `automated-machine-learning` · `eda` · `classification` · `regression` · `model-training` · `feature-importance` · `smote` · `gradient-boosting`
+`automl` · `machine-learning` · `no-code` · `streamlit` · `scikit-learn` · `data-science` · `python` · `automated-machine-learning` · `eda` · `classification` · `regression` · `model-training` · `feature-importance` · `smote` · `gradient-boosting` · `shap` · `optuna` · `time-series` · `nlp` · `feature-engineering` · `explainable-ai` · `hyperparameter-optimization`
 
 ---
 

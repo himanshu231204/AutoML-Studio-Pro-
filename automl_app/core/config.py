@@ -475,7 +475,7 @@ def setup_page(theme_mode: str = "light") -> None:
         page_title="AutoML Studio Pro",
         page_icon="🎓",
         layout="wide",
-        initial_sidebar_state="collapsed",
+        initial_sidebar_state="expanded",
     )
     os.makedirs(ARTIFACTS_DIR, exist_ok=True)
     themed_css = BASE_CSS.replace("__THEME_VARIABLES__", _theme_variables(theme_mode))

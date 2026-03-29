@@ -1,0 +1,19 @@
+# Development dependencies for AutoML Studio Pro
+# Install with: pip install -r requirements-dev.txt
+
+# Testing
+pytest==8.3.5
+pytest-cov==6.1.1
+pytest-mock==3.14.0
+
+# Linting and formatting
+ruff==0.9.7
+
+# Security scanning
+safety==3.4.1
+
+# Code coverage
+coverage==7.6.12
+
+# Type checking (optional)
+# mypy==1.15.0

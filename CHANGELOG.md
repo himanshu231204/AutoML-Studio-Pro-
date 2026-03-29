@@ -4,6 +4,58 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-03-29
+
+### Added
+- **Phase 2 Medium Complexity Features:**
+  - Feature Engineering Module: Automated polynomial features, interaction features, and statistical aggregations
+  - SHAP/Explainable AI: Model interpretability with SHAP values and feature importance visualization
+  - AutoML Hyperparameter Optimization: Optuna integration for advanced hyperparameter tuning
+  - NLP/Text Classification: Text preprocessing with TF-IDF and configurable n-gram ranges
+  - Time Series Support: ARIMA and Exponential Smoothing models for temporal data forecasting
+  - Data Versioning: Track and compare datasets across versions with MD5 hashing
+
+- **New Dependencies:**
+  - shap==0.46.0 - SHAP explanations
+  - optuna==4.2.1 - Hyperparameter optimization
+  - statsmodels==0.14.4 - Time series models
+
+## [1.2.0] - 2026-03-29
+
+### Added
+- **Phase 1 Quick Wins Features:**
+  - Sample Datasets: Built-in datasets (Iris, Wine, Breast Cancer, Diabetes) for quick demo
+  - Dark/Light Theme Toggle: Sidebar theme switcher with session state persistence
+  - Missing Value Strategy Selector: Choose imputation methods (median/mean/most_frequent/constant)
+  - Preprocessing Pipeline Preview: Visual preview of preprocessing steps before training
+  - Cross-Validation Visualization: Bar charts and histograms showing CV scores by model
+  - Model History: Track last 10 trained models with timestamps and metrics
+  - Model Comparison Dashboard: Side-by-side model comparison with score charts and trends
+  - Ensemble Model Builder: UI for voting/stacking ensemble configuration
+  - PDF Report Export: HTML report generation with model details and metrics
+
+- **DevOps Improvements:**
+  - Enhanced CI workflow with security scanning (safety), linting (ruff), and coverage reporting
+  - Fixed CD workflow to trigger on version tags only (v*.*.*)
+  - Improved Dockerfile with multi-stage build and health checks
+  - Created requirements-dev.txt for development dependencies
+  - Added .streamlit/config.toml for Streamlit Community Cloud deployment
+
+- **Testing:**
+  - Created comprehensive test suite for Phase 1 features (tests/test_phase1_features.py)
+  - Added manual test checklist (tests/manual_test_checklist.md)
+
+### Fixed
+- PDF Report Export: Handle None cv_score values gracefully (shows "N/A")
+- Duplicate Streamlit element IDs: Added unique keys to all selectbox elements
+
+### Changed
+- Updated build_preprocessor() to accept imputation strategy parameters
+- Sidebar now expanded by default for theme toggle access
+- FEATURES_ROADMAP.md updated with Phase 1 completion status
+
+## [Unreleased]
+
 ### Added
 - Professional repository and documentation structure:
   - assets/images/badges

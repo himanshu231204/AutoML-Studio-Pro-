@@ -46,9 +46,19 @@ def is_classification(y: pd.Series) -> bool:
     return (pd.Series(y).dtype.kind in ("O", "b")) or (pd.Series(y).nunique() <= 20)
 
 
-def build_preprocessor(df: pd.DataFrame, target_col: str) -> tuple[ColumnTransformer, list[str], list[str]]:
+def build_preprocessor(
+    df: pd.DataFrame, 
+    target_col: str,
+    num_impute_strategy: str = "median",
+    cat_impute_strategy: str = "most_frequent"
+) -> tuple[ColumnTransformer, list[str], list[str]]:
     num_cols, cat_cols = quick_dtype_buckets(df, target_col)
-    steps_num = [("imputer", SimpleImputer(strategy="median")), ("scaler", StandardScaler())]
+    
+    # Use user-specified imputation strategies with fallback to defaults
+    num_strategy = num_impute_strategy if num_impute_strategy in ["mean", "median", "most_frequent", "constant"] else "median"
+    cat_strategy = cat_impute_strategy if cat_impute_strategy in ["most_frequent", "constant"] else "most_frequent"
+    
+    steps_num = [("imputer", SimpleImputer(strategy=num_strategy)), ("scaler", StandardScaler())]
 
     # Reduce overfitting from very rare categories when supported.
     try:
@@ -61,7 +71,7 @@ def build_preprocessor(df: pd.DataFrame, target_col: str) -> tuple[ColumnTransfo
         encoder = OneHotEncoder(handle_unknown="ignore", sparse_output=False)
 
     steps_cat = [
-        ("imputer", SimpleImputer(strategy="most_frequent")),
+        ("imputer", SimpleImputer(strategy=cat_strategy)),
         ("encoder", encoder),
     ]
 

@@ -25,16 +25,40 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install pytest
+          pip install -r requirements-dev.txt
 
-      - name: Syntax smoke check
+      - name: Check code format with Ruff
+        run: ruff check .
+
+      - name: Check code syntax
         run: python -m compileall .
 
-      - name: Run pytest (if tests exist)
+      - name: Run security scan with Safety
+        run: |
+          safety check --json > safety-report.json || true
+          safety check
+
+      - name: Run pytest with coverage
         shell: bash
         run: |
           if ls tests/test_*.py tests/*_test.py >/dev/null 2>&1; then
-            pytest -q
+            pytest -q --cov=. --cov-report=xml --cov-report=term
           else
             echo "No tests found in tests/. Skipping pytest."
           fi
+
+      - name: Upload coverage reports
+        if: success()
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+
+      - name: Upload safety report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: safety-report
+          path: safety-report.json
+          retention-days: 7
