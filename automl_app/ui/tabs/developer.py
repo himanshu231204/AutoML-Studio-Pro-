@@ -3,7 +3,7 @@ import streamlit as st
 
 def render_developer_tab() -> None:
     """Render the Developer Info tab with introduction and social media links."""
-    
+
     st.markdown(
         """
         <style>
@@ -275,7 +275,7 @@ def render_developer_tab() -> None:
     # About Section
     st.markdown("### 🌟 About Me")
     col1, col2 = st.columns(2)
-    
+
     with col1:
         st.markdown(
             """
@@ -284,7 +284,7 @@ def render_developer_tab() -> None:
 
             I believe in learning by building, not just consuming tutorials, and sharing every
             project publicly through open source.
-            
+
             **What I Do:**
             - Design AI systems, not just isolated models
             - Build retrieval, training, and deployment pipelines
@@ -293,7 +293,7 @@ def render_developer_tab() -> None:
             - Build in public and collaborate through open source
             """
         )
-    
+
     with col2:
         col_a, col_b, col_c = st.columns(3)
         with col_a:
@@ -331,9 +331,9 @@ def render_developer_tab() -> None:
 
     # Skills Section
     st.markdown("### 💼 Core Competencies")
-    
+
     col1, col2, col3 = st.columns(3)
-    
+
     with col1:
         st.markdown(
             """
@@ -344,7 +344,7 @@ def render_developer_tab() -> None:
             - Performance benchmarking
             """
         )
-    
+
     with col2:
         st.markdown(
             """
@@ -355,7 +355,7 @@ def render_developer_tab() -> None:
             - Prompt and pipeline orchestration
             """
         )
-    
+
     with col3:
         st.markdown(
             """
@@ -368,9 +368,9 @@ def render_developer_tab() -> None:
         )
 
     st.markdown("<br>", unsafe_allow_html=True)
-    
+
     col1, col2, col3 = st.columns(3)
-    
+
     with col1:
         st.markdown("""**Tech Stack:** Python • C++ • LangChain • FAISS""")
     with col2:
@@ -382,9 +382,9 @@ def render_developer_tab() -> None:
 
     # Projects Section
     st.markdown("### 🚀 Featured Projects")
-    
+
     col1, col2, col3 = st.columns(3)
-    
+
     with col1:
         st.markdown(
             """
@@ -404,7 +404,7 @@ def render_developer_tab() -> None:
             "https://github.com/himanshu231204/ragnova-rag-chatbot",
             use_container_width=True,
         )
-    
+
     with col2:
         st.markdown(
             """
@@ -449,7 +449,7 @@ def render_developer_tab() -> None:
 
     # Journey Section
     st.markdown("### 🎯 Focus Areas")
-    
+
     st.markdown(
         """
         <div class="timeline">
@@ -486,7 +486,7 @@ def render_developer_tab() -> None:
 
     # Info Cards
     col1, col2 = st.columns(2)
-    
+
     with col1:
         st.markdown(
             """
@@ -501,7 +501,7 @@ def render_developer_tab() -> None:
             """,
             unsafe_allow_html=True,
         )
-    
+
     with col2:
         st.markdown(
             """
@@ -530,7 +530,7 @@ def render_developer_tab() -> None:
         """,
         unsafe_allow_html=True,
     )
-    
+
     col1, col2, col3 = st.columns(3)
     with col1:
         st.link_button(

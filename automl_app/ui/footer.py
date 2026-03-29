@@ -67,7 +67,7 @@ def render_footer() -> None:
                 margin-top: 1rem;
             }
         </style>
-        
+
         <div class="footer-container">
             <div class="footer-divider"></div>
             <div class="footer-content">

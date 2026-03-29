@@ -26,7 +26,7 @@ def render_prediction_tab() -> None:
         st.stop()
 
     pipeline = joblib.load(os.path.join(ARTIFACTS_DIR, "final_pipeline.joblib"))
-    with open(os.path.join(ARTIFACTS_DIR, "app_schema.json"), "r", encoding="utf-8") as f:
+    with open(os.path.join(ARTIFACTS_DIR, "app_schema.json"), encoding="utf-8") as f:
         schema = json.load(f)
 
     pred_mode = st.radio("Input Mode:", ["Single Entry", "Batch Upload (CSV)"], horizontal=True)

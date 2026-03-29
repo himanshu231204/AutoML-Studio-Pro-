@@ -80,10 +80,10 @@ def _data_quality_score(df: pd.DataFrame) -> dict[str, float]:
     total_cells = df.shape[0] * df.shape[1]
     missing_cells = int(df.isna().sum().sum())
     duplicate_rows = int(df.duplicated().sum())
-    
+
     completeness = ((total_cells - missing_cells) / total_cells * 100) if total_cells > 0 else 0
     uniqueness = ((df.shape[0] - duplicate_rows) / df.shape[0] * 100) if df.shape[0] > 0 else 0
-    
+
     numeric_df = df.select_dtypes(include=[np.number])
     outlier_count = 0
     for col in numeric_df.columns:
@@ -93,13 +93,13 @@ def _data_quality_score(df: pd.DataFrame) -> dict[str, float]:
             iqr = q3 - q1
             if iqr > 0:
                 outlier_count += ((series < (q1 - 1.5 * iqr)) | (series > (q3 + 1.5 * iqr))).sum()
-    
+
     total_numeric_cells = len(numeric_df) * len(numeric_df.columns) if len(numeric_df.columns) > 0 else 1
     outlier_ratio = (outlier_count / total_numeric_cells * 100) if total_numeric_cells > 0 else 0
     consistency = max(0, 100 - outlier_ratio)
-    
+
     quality_score = (completeness * 0.4 + uniqueness * 0.3 + consistency * 0.3)
-    
+
     return {
         "completeness": round(completeness, 2),
         "uniqueness": round(uniqueness, 2),
@@ -112,19 +112,19 @@ def _top_correlations(numeric_df: pd.DataFrame, method: str = "pearson", top_n: 
     """Extract top correlated features (excluding self-correlation)."""
     if numeric_df.shape[1] < 2:
         return pd.DataFrame()
-    
+
     corr_matrix = numeric_df.corr(method=method)
-    
+
     pairs = []
     for i in range(len(corr_matrix.columns)):
         for j in range(i + 1, len(corr_matrix.columns)):
             col1, col2 = corr_matrix.columns[i], corr_matrix.columns[j]
             correlation = corr_matrix.iloc[i, j]
             pairs.append({"feature_1": col1, "feature_2": col2, "correlation": round(correlation, 4)})
-    
+
     if not pairs:
         return pd.DataFrame()
-    
+
     pairs_df = pd.DataFrame(pairs)
     pairs_df["abs_correlation"] = pairs_df["correlation"].abs()
     return pairs_df.nlargest(top_n, "abs_correlation")[["feature_1", "feature_2", "correlation"]]
@@ -149,7 +149,7 @@ def _variance_analysis(numeric_df: pd.DataFrame) -> pd.DataFrame:
     """Analyze variance and relative importance of numeric features."""
     rows: list[dict[str, object]] = []
     total_variance = numeric_df.var(numeric_only=True).sum()
-    
+
     for col in numeric_df.columns:
         variance = numeric_df[col].var()
         variance_pct = (variance / total_variance * 100) if total_variance > 0 else 0
@@ -158,7 +158,7 @@ def _variance_analysis(numeric_df: pd.DataFrame) -> pd.DataFrame:
             "variance": round(variance, 4),
             "variance_%": round(variance_pct, 2),
         })
-    
+
     return pd.DataFrame(rows).sort_values("variance_%", ascending=False)
 
 
@@ -288,7 +288,7 @@ def render_analysis_tab() -> None:
             col1, col2 = st.columns(2)
             with col1:
                 st.write("""
-                - **Skewness**: 
+                - **Skewness**:
                   - 0-0.5: Fairly symmetric
                   - 0.5-1: Moderately skewed
                   - >1: Highly skewed
@@ -319,11 +319,11 @@ def render_analysis_tab() -> None:
 
             value_counts = categorical_df[target_col].value_counts()
             fig, ax = plt.subplots(figsize=(10, 4))
-            bars = ax.barh(value_counts.index, value_counts.values, color="#1da58f")
+            ax.barh(value_counts.index, value_counts.values, color="#1da58f")
             ax.set_xlabel("Count")
             ax.set_title(f"Class Distribution - {target_col}")
 
-            for i, (idx, val) in enumerate(zip(value_counts.index, value_counts.values)):
+            for i, (_idx, val) in enumerate(zip(value_counts.index, value_counts.values)):
                 pct = val / value_counts.sum() * 100
                 ax.text(val, i, f" {pct:.1f}%", va="center", fontsize=9)
 
@@ -412,7 +412,7 @@ def render_analysis_tab() -> None:
         ax.set_xlabel("Quality Score (%)")
         ax.set_title("Data Quality Gauge")
 
-        for i, v in enumerate([25, 50, 75]):
+        for v in [25, 50, 75]:
             ax.axvline(v, color='gray', linestyle='--', alpha=0.3, linewidth=0.8)
 
         st.pyplot(fig)

@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import time
 
@@ -31,6 +32,8 @@ from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 
 from automl_app.core.config import ARTIFACTS_DIR
 
+logger = logging.getLogger(__name__)
+
 
 def quick_dtype_buckets(df: pd.DataFrame, target_col: str) -> tuple[list[str], list[str]]:
     num_cols = df.select_dtypes(include=["number"]).columns.tolist()
@@ -47,17 +50,17 @@ def is_classification(y: pd.Series) -> bool:
 
 
 def build_preprocessor(
-    df: pd.DataFrame, 
+    df: pd.DataFrame,
     target_col: str,
     num_impute_strategy: str = "median",
     cat_impute_strategy: str = "most_frequent"
 ) -> tuple[ColumnTransformer, list[str], list[str]]:
     num_cols, cat_cols = quick_dtype_buckets(df, target_col)
-    
+
     # Use user-specified imputation strategies with fallback to defaults
     num_strategy = num_impute_strategy if num_impute_strategy in ["mean", "median", "most_frequent", "constant"] else "median"
     cat_strategy = cat_impute_strategy if cat_impute_strategy in ["most_frequent", "constant"] else "most_frequent"
-    
+
     steps_num = [("imputer", SimpleImputer(strategy=num_strategy)), ("scaler", StandardScaler())]
 
     # Reduce overfitting from very rare categories when supported.
@@ -341,8 +344,8 @@ def _classification_metric_breakdown(pipeline, X_test: pd.DataFrame, y_test) -> 
             out["roc_auc"] = float(roc_auc_score(y_test, y_prob[:, 1]))
         else:
             out["roc_auc"] = float(roc_auc_score(y_test, y_prob, multi_class="ovr", average="weighted"))
-    except Exception:
-        pass
+    except Exception as e:
+        logger.debug(f"ROC AUC calculation failed: {e}")
     return out
 
 
@@ -426,7 +429,7 @@ def tune_top_models(
         if time_budget_sec is not None and (time.perf_counter() - start_time) >= float(time_budget_sec):
             break
         base_model = models[name]
-        variants = [clone(base_model)] + _build_tuned_variants(task, name)
+        variants = [clone(base_model), *_build_tuned_variants(task, name)]
         for idx, variant in enumerate(variants):
             if time_budget_sec is not None and (time.perf_counter() - start_time) >= float(time_budget_sec):
                 break
@@ -447,7 +450,8 @@ def tune_top_models(
                     y_test,
                     classification_metric=classification_metric,
                 )
-            except Exception:
+            except Exception as e:
+                logger.debug(f"Model {display_name} training failed: {e}")
                 continue
 
             row = {"model": display_name, "score": float(score)}
@@ -483,7 +487,7 @@ def select_best_model(
     best_pipeline = None
     best_score = None
 
-    min_samples = int(len(X_train))
+    min_samples = len(X_train)
     use_cv = min_samples >= 30
     cv_splitter = None
 
@@ -530,7 +534,8 @@ def select_best_model(
                     y_test,
                     classification_metric=classification_metric,
                 )
-            except Exception:
+            except Exception as e:
+                logger.debug(f"Model evaluation failed: {e}")
                 continue
 
         cv_score = np.nan

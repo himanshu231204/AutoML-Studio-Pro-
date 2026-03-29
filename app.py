@@ -3,12 +3,12 @@ import warnings
 import streamlit as st
 
 from automl_app.core.config import setup_page
+from automl_app.ui.footer import render_footer
 from automl_app.ui.tabs.analysis import render_analysis_tab
 from automl_app.ui.tabs.developer import render_developer_tab
 from automl_app.ui.tabs.manual import render_manual_tab
 from automl_app.ui.tabs.prediction import render_prediction_tab
 from automl_app.ui.tabs.train import render_train_tab
-from automl_app.ui.footer import render_footer
 
 warnings.filterwarnings("ignore")
 
@@ -17,11 +17,11 @@ def _render_theme_toggle() -> None:
     """Render the theme toggle in sidebar."""
     with st.sidebar:
         st.markdown("### 🎨 Theme")
-        
+
         # Initialize theme in session state if not exists
         if "theme_mode" not in st.session_state:
             st.session_state["theme_mode"] = "dark"
-        
+
         theme_col1, theme_col2 = st.columns(2)
         with theme_col1:
             if st.button("🌙 Dark", use_container_width=True, key="theme_dark"):
@@ -31,7 +31,7 @@ def _render_theme_toggle() -> None:
             if st.button("☀️ Light", use_container_width=True, key="theme_light"):
                 st.session_state["theme_mode"] = "light"
                 st.rerun()
-        
+
         # Show current theme indicator
         current = st.session_state.get("theme_mode", "dark")
         st.caption(f"Current: **{current.title()}** mode")
@@ -41,7 +41,7 @@ def main() -> None:
     # Get theme from session state (default to dark)
     theme_mode = st.session_state.get("theme_mode", "dark")
     setup_page(theme_mode=theme_mode)
-    
+
     # Add theme toggle
     _render_theme_toggle()
 
