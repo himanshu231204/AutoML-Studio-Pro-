@@ -35,8 +35,10 @@ jobs:
 
       - name: Run security scan with Safety
         run: |
-          safety check --json > safety-report.json || true
-          safety check
+          safety check -r requirements.txt --json > safety-report-prod.json || true
+          safety check -r requirements-dev.txt --json > safety-report-dev.json || true
+          safety check -r requirements.txt
+          safety check -r requirements-dev.txt
 
       - name: Run pytest with coverage
         shell: bash
@@ -60,5 +62,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: safety-report
-          path: safety-report.json
+          path: |
+            safety-report-prod.json
+            safety-report-dev.json
           retention-days: 7
