@@ -28,6 +28,7 @@
 - [Key Features](#key-features)
 - [Tech Stack](#tech-stack)
 - [Getting Started](#getting-started)
+- [CI & Security Checks](#ci--security-checks)
 - [Project Structure](#project-structure)
 - [Usage](#usage)
 - [Architecture](#architecture)
@@ -218,6 +219,29 @@ Troubleshooting:
 	Check logs with `docker logs automl_studio_pro`.
 - Dependency changes are not reflected:
 	Rebuild image with `docker compose up -d --build` or `docker build --no-cache -t automl-studio-pro .`.
+
+---
+
+## CI & Security Checks
+
+This repository uses GitHub Actions for linting, tests, and dependency security scanning.
+
+### Security Scan Behavior
+
+- CI uses **Safety** to scan dependency files directly:
+  - `requirements.txt`
+  - `requirements-dev.txt`
+- This avoids false failures from transient environment/toolchain packages and keeps scans focused on declared project dependencies.
+
+### Run the same checks locally
+
+```bash
+ruff check .
+python -m compileall app.py automl_app tests
+pytest -q
+safety check -r requirements.txt
+safety check -r requirements-dev.txt
+```
 
 ---
 
