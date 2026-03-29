@@ -1,0 +1,94 @@
+# Pre-commit hooks for AutoML Studio Pro
+# ========================================
+# Install: pip install pre-commit
+# Setup: pre-commit install
+# Run manually: pre-commit run --all-files
+
+repos:
+  # General file fixes
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: check-case-conflict
+      - id: check-docstring-first
+      - id: debug-statements
+      - id: mixed-line-ending
+        args: [--fix=lf]
+
+  # Python code formatting with Ruff
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.9.7
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+      - id: ruff-format
+
+  # Type checking with mypy
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.15.0
+    hooks:
+      - id: mypy
+        args: [--ignore-missing-imports, --no-strict-optional]
+        additional_dependencies: [types-all]
+        exclude: ^(tests/|docs/|scripts/)
+
+  # Security scanning
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.7
+    hooks:
+      - id: bandit
+        args: [-c, pyproject.toml]
+        additional_dependencies: ["bandit[toml]"]
+        exclude: ^(tests/)
+
+  # Check for common issues
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.15.0
+    hooks:
+      - id: pyupgrade
+        args: [--py39-plus]
+
+  # Import sorting
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        args: ["--profile", "black"]
+
+  # Check for typos
+  - repo: https://github.com/crate-ci/typos
+    rev: v1.28.4
+    hooks:
+      - id: typos
+        args: []
+        exclude: ^(.*\.(lock|snap|png|jpg|jpeg|gif|ico|svg|ttf|woff|woff2|eot)|.*\.min\.(js|css)|CHANGELOG\.md|LICENSE)$
+
+  # Check file sizes
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: check-added-large-files
+        args: [--maxkb=1000]
+      - id: check-ast
+      - id: check-merge-conflict
+
+  # Notebooks (if any)
+  - repo: https://github.com/kynan/nbstripout
+    rev: 0.8.1
+    hooks:
+      - id: nbstripout
+        stages: [pre-commit]
+
+# Language-specific configurations
+default_language_version:
+  python: python3.13
+
+# Default stages
+default_stages: [pre-commit, push]

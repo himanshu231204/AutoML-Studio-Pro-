@@ -1,0 +1,47 @@
+# Code Owners for AutoML Studio Pro
+# ==================================
+# This file defines who owns which parts of the codebase.
+# Owners are automatically requested for review when PRs modify their files.
+
+# Default owner for all files
+* @himanshu231204
+
+# Core application code
+/automl_app/core/ @himanshu231204
+/automl_app/ui/ @himanshu231204
+
+# Main application entry point
+/app.py @himanshu231204
+
+# Tests
+/tests/ @himanshu231204
+
+# CI/CD and GitHub configuration
+/.github/ @himanshu231204
+
+# Docker configuration
+/Dockerfile @himanshu231204
+/docker-compose.yml @himanshu231204
+/.dockerignore @himanshu231204
+
+# Documentation
+/README.md @himanshu231204
+/ARCHITECTURE.md @himanshu231204
+/CONTRIBUTING.md @himanshu231204
+/CODE_OF_CONDUCT.md @himanshu231204
+/SECURITY.md @himanshu231204
+/CHANGELOG.md @himanshu231204
+/docs/ @himanshu231204
+
+# Dependencies and configuration
+/requirements.txt @himanshu231204
+/requirements-dev.txt @himanshu231204
+/pyproject.toml @himanshu231204
+/.pre-commit-config.yaml @himanshu231204
+/.editorconfig @himanshu231204
+
+# Streamlit configuration
+/.streamlit/ @himanshu231204
+
+# Assets and images
+/assets/ @himanshu231204
